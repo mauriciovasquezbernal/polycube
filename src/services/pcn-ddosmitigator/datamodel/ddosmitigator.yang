@@ -37,16 +37,6 @@ module ddosmitigator {
     }
   }
 
-  leaf active-port {
-    type string;
-    description "Port where the traffic is received";
-  }
-
-  leaf redirect-port {
-    type string;
-    description "If set, this will be the port used to redirect traffic (instead of PASS it to STACK)";
-  }
-
   list blacklist-src {
       key "ip";
       description "Blacklisted source IP addresses";
