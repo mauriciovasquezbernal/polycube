@@ -19,14 +19,13 @@
 
 #include "../interface/NatInterface.h"
 
-#include "polycube/services/cube.h"
+#include "polycube/services/transparent_cube.h"
 #include "polycube/services/port.h"
 #include "polycube/services/utils.h"
 
 #include <spdlog/spdlog.h>
 
 #include "NattingTable.h"
-#include "Ports.h"
 #include "Rule.h"
 
 using namespace io::swagger::server::model;
@@ -56,18 +55,18 @@ struct sm_v {
   uint8_t entry_type;
 } __attribute__((packed));
 
-class Nat : public polycube::service::Cube<Ports>, public NatInterface {
-  friend class Ports;
+class Nat : public polycube::service::TransparentCube, public NatInterface {
   friend class Rule;
  public:
   Nat(const std::string name, const NatJsonObject &conf, CubeType type = CubeType::TC);
   virtual ~Nat();
   std::string generate_code();
   std::vector<std::string> generate_code_vector();
-  void packet_in(Ports &port, polycube::service::PacketInMetadata &md, const std::vector<uint8_t> &packet) override;
 
   void update(const NatJsonObject &conf) override;
   NatJsonObject toJsonObject() override;
+
+  void attach() override;
 
   /// <summary>
   /// Name of the nat service
@@ -91,17 +90,6 @@ class Nat : public polycube::service::Cube<Ports>, public NatInterface {
   void setLoglevel(const NatLoglevelEnum &value) override;
 
   /// <summary>
-  /// Entry of the ports table
-  /// </summary>
-  std::shared_ptr<Ports> getPorts(const std::string &name) override;
-  std::vector<std::shared_ptr<Ports>> getPortsList() override;
-  void addPorts(const std::string &name, const PortsJsonObject &conf) override;
-  void addPortsList(const std::vector<PortsJsonObject> &conf) override;
-  void replacePorts(const std::string &name, const PortsJsonObject &conf) override;
-  void delPorts(const std::string &name) override;
-  void delPortsList() override;
-
-  /// <summary>
   ///
   /// </summary>
   std::shared_ptr<Rule> getRule() override;
@@ -120,9 +108,6 @@ class Nat : public polycube::service::Cube<Ports>, public NatInterface {
   void delNattingTable(const std::string &internalSrc, const std::string &internalDst, const uint16_t &internalSport, const uint16_t &internalDport, const std::string &proto) override;
   void delNattingTableList() override;
 
-  std::shared_ptr<Ports> getExternalPort();
-  std::shared_ptr<Ports> getInternalPort();
-
   std::string getExternalIpString();
 
   std::string proto_from_int_to_string(const uint8_t proto);
@@ -131,11 +116,6 @@ class Nat : public polycube::service::Cube<Ports>, public NatInterface {
 private:
   std::shared_ptr<Rule> rule_;
 
-  uint16_t internal_port_index_;
-  uint16_t external_port_index_;
-
   std::string external_ip_;
-
-  void reloadCode();
 };
 

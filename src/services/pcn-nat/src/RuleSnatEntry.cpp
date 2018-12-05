@@ -160,7 +160,8 @@ std::shared_ptr<spdlog::logger> RuleSnatEntry::logger() {
 }
 
 void RuleSnatEntry::injectToDatapath() {
-  auto sm_rules = parent_.parent_.getParent().get_hash_table<sm_k, sm_v>("sm_rules");
+  auto sm_rules = parent_.parent_.getParent().get_hash_table<sm_k, sm_v>(
+    "sm_rules", 0, ProgramType::EGRESS);
   sm_k key {
     .internal_netmask_len = internalNetmask,
     .internal_ip = internalIp,
@@ -174,7 +175,8 @@ void RuleSnatEntry::injectToDatapath() {
 }
 
 void RuleSnatEntry::removeFromDatapath() {
-  auto sm_rules = parent_.parent_.getParent().get_hash_table<sm_k, sm_v>("sm_rules");
+  auto sm_rules = parent_.parent_.getParent().get_hash_table<sm_k, sm_v>(
+    "sm_rules", 0, ProgramType::EGRESS);
   sm_k key {
     .internal_netmask_len = internalNetmask,
     .internal_ip = internalIp,

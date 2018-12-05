@@ -163,7 +163,8 @@ std::shared_ptr<spdlog::logger> RuleDnatEntry::logger() {
 }
 
 void RuleDnatEntry::injectToDatapath() {
-  auto dp_rules = parent_.parent_.getParent().get_hash_table<dp_k, dp_v>("dp_rules");
+  auto dp_rules = parent_.parent_.getParent().get_hash_table<dp_k, dp_v>(
+    "dp_rules", 0, ProgramType::INGRESS);
 
   dp_k key {
     .mask = 32,
@@ -182,7 +183,8 @@ void RuleDnatEntry::injectToDatapath() {
 }
 
 void RuleDnatEntry::removeFromDatapath() {
-  auto dp_rules = parent_.parent_.getParent().get_hash_table<dp_k, dp_v>("dp_rules");
+  auto dp_rules = parent_.parent_.getParent().get_hash_table<dp_k, dp_v>(
+    "dp_rules", 0, ProgramType::INGRESS);
 
   dp_k key {
     .mask = 32,

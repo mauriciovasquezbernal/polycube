@@ -77,7 +77,8 @@ RuleMasqueradeEnableOutputJsonObject RuleMasquerade::enable() {
   }
   try {
     // Inject rule in the datapath table
-    auto sm_rules = parent_.getParent().get_hash_table<sm_k, sm_v>("sm_rules");
+    auto sm_rules = parent_.getParent().get_hash_table<sm_k, sm_v>(
+      "sm_rules", 0, ProgramType::EGRESS);
     sm_k key {
       .internal_netmask_len = 0,
       .internal_ip = 0,
@@ -105,7 +106,8 @@ RuleMasqueradeDisableOutputJsonObject RuleMasquerade::disable() {
     return output;
   }
   try {
-    auto sm_rules = parent_.getParent().get_hash_table<sm_k, sm_v>("sm_rules");
+    auto sm_rules = parent_.getParent().get_hash_table<sm_k, sm_v>(
+      "sm_rules", 0, ProgramType::EGRESS);
     sm_k key {
       .internal_netmask_len = 0,
       .internal_ip = 0,
