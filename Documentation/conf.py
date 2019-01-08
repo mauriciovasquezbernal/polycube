@@ -181,7 +181,9 @@ epub_exclude_files = ['search.html']
 
 # taken from cilium
 # TODO: how to actually get the branch
-branch = 'master'
+branch = os.environ.get('READTHEDOCS_VERSION')
+if branch == None or branch == 'latest':
+  branch = 'HEAD'
 githubusercontent = 'https://raw.githubusercontent.com/polycube-network/polycube/'
 scm_web = githubusercontent + branch
 
