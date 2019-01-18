@@ -34,6 +34,7 @@ set(polycubed_sources
   port.cpp
   port_tc.cpp
   port_xdp.cpp
+  base_cube.cpp
   cube.cpp
   cube_tc.cpp
   cube_xdp.cpp
