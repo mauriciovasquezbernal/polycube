@@ -44,16 +44,11 @@ enum class CubeType {
   XDP_DRV,
 };
 
-class CubeIface {
-
-public:
+class BaseCubeIface {
+ public:
   virtual void reload(const std::string &code, int index, ProgramType type) = 0;
-  virtual int add_program(const std::string &code, int inde, ProgramType type) = 0;
+  virtual int add_program(const std::string &code, int index, ProgramType type) = 0;
   virtual void del_program(int index, ProgramType type) = 0;
-
-  virtual std::shared_ptr<PortIface> add_port(const std::string &name) = 0;
-  virtual void remove_port(const std::string &name) = 0;
-  virtual std::shared_ptr<PortIface> get_port(const std::string &name) = 0;
 
   virtual CubeType get_type() const = 0;
 
@@ -62,11 +57,8 @@ public:
   virtual uint32_t get_id() const = 0;
 
   virtual uint16_t get_index(ProgramType type) const = 0;
-
-  virtual void update_forwarding_table(int index, int value) = 0;
-
   virtual int get_table_fd(const std::string &table_name, int index,
-                             ProgramType type) = 0;
+                           ProgramType type) = 0;
 
   virtual void set_log_level(LogLevel level) = 0;
   virtual LogLevel get_log_level() const = 0;
@@ -74,7 +66,16 @@ public:
   virtual const Guid &uuid() const = 0;
   virtual const std::string get_name() const = 0;
 
-  virtual json toJson(bool include_ports = false) const = 0;
+  virtual json to_json() const = 0;
+};
+
+class CubeIface : virtual public BaseCubeIface {
+ public:
+  virtual std::shared_ptr<PortIface> add_port(const std::string &name) = 0;
+  virtual void remove_port(const std::string &name) = 0;
+  virtual std::shared_ptr<PortIface> get_port(const std::string &name) = 0;
+
+  virtual void update_forwarding_table(int index, int value) = 0;
 };
 
 }
