@@ -31,7 +31,6 @@ using polycube::service::PortIface;
 #include "cube_factory_impl.h"
 #include "cube_tc.h"
 #include "cube_xdp.h"
-#include "port_host.h"
 #include "extiface_tc.h"
 #include "extiface_xdp.h"
 #include "port_tc.h"
