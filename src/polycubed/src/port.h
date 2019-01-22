@@ -16,13 +16,12 @@
 
 #pragma once
 
-#include "node.h"
-
 // TODO: probably this include should not exist
 #include "polycube/services/cube_factory.h"
 #include "polycube/services/cube_iface.h"
 #include "polycube/services/port_iface.h"
 #include "polycube/services/guid.h"
+#include "peer_iface.h"
 
 #include <cstdint>
 #include <functional>
@@ -38,19 +37,28 @@ namespace polycube {
 namespace polycubed {
 
 class ServiceController;
+class ExtIface;
 
-class Port : public polycube::service::PortIface {
+class Port : public polycube::service::PortIface, public PeerIface {
   friend class ServiceController;
+  friend class ExtIface;
  public:
   Port(CubeIface &parent, const std::string &name, uint16_t index);
-  ~Port();
+  virtual ~Port();
   Port(const Port &p) = delete;
   Port &operator=(const Port &) = delete;
 
+  // PeerIface
+  uint16_t get_index() const override;
+  uint16_t get_port_id() const override;
+  void set_next_index(uint16_t index) override;
+  void set_peer_iface(PeerIface *peer) override;
+  PeerIface *get_peer_iface() override;
+
+  // TODO: rename this
   uint16_t index() const;
   const Guid &uuid() const;
-  uint32_t serialize_ingress() const;
-  uint32_t serialize_egress() const;
+  uint16_t get_egress_index() const;
   std::string name() const;
   std::string get_path() const; /* cube_name:port_name syntax*/
   bool operator==(const polycube::service::PortIface &rhs) const;
@@ -63,10 +71,8 @@ class Port : public polycube::service::PortIface {
 
   void netlink_notification(int ifindex, const std::string &ifname);
 
-  static void connect(Port &p1, Node &iface);
-  static void connect(Port &p1, Port &p2);
-  static void unconnect(Port &p1, Node &iface);
-  static void unconnect(Port &p1, Port &p2);
+  static void connect(PeerIface &p1, PeerIface &p2);
+  static void unconnect(PeerIface &p1, PeerIface &p2);
 
  protected:
   PortType type_;
@@ -78,9 +84,8 @@ class Port : public polycube::service::PortIface {
   std::string peer_;
   int netlink_notification_index;
 
-  // TODO: is it possible to merge these two into a single one?
-  Port *peer_port_;
-  Node *peer_iface_;
+  // TODO: I know, a better name is needed
+  PeerIface *peer_port_;
 
   mutable std::mutex port_mutex_;
 
