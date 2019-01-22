@@ -83,7 +83,7 @@ class ServiceController {
 
   std::shared_ptr<ManagementInterface> managementInterface;
 
-  static std::unordered_map<std::string, std::unique_ptr<ExtIface>> ports_to_ifaces;
+  static std::unordered_map<std::string, std::shared_ptr<ExtIface>> ports_to_ifaces;
 
 private:
   std::string name_;
