@@ -111,6 +111,10 @@ const std::string BaseCube::get_name() const {
   return name_;
 }
 
+const std::string BaseCube::get_service_name() const {
+  return service_name_;
+}
+
 const Guid &BaseCube::uuid() const {
   return uuid_;
 }

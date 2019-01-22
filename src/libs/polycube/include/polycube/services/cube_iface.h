@@ -28,6 +28,8 @@
 
 using json = nlohmann::json;
 
+//class polycube::polycubed::PeerIface;
+
 namespace polycube {
 namespace service {
 
@@ -56,6 +58,7 @@ class BaseCubeIface {
   virtual void del_program(int index, ProgramType type) = 0;
 
   virtual CubeType get_type() const = 0;
+  virtual const std::string get_service_name() const = 0;
   // get unique system-wide module id
   // TODO: how is this related to uuid?
   virtual uint32_t get_id() const = 0;

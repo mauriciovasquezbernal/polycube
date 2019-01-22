@@ -15,6 +15,7 @@
  */
 
 #include "transparent_cube.h"
+#include "peer_iface.h"
 #include "controller.h"
 #include "port.h"
 
@@ -37,7 +38,9 @@ TransparentCube::TransparentCube(const std::string &name,
 }
 
 TransparentCube::~TransparentCube() {
-
+  if (parent_) {
+    parent_->remove_cube(get_name());
+  }
 }
 
 std::string TransparentCube::get_wrapper_code() {
@@ -61,14 +64,14 @@ void TransparentCube::set_next(uint16_t next, ProgramType type) {
   reload_all();
 }
 
-void TransparentCube::set_parent(PortIface *parent) {
+void TransparentCube::set_parent(PeerIface *parent) {
   parent_ = parent;
   if (parent) {
     attach_();
   }
 }
 
-PortIface *TransparentCube::get_parent() {
+PeerIface *TransparentCube::get_parent() {
   return parent_;
 }
 

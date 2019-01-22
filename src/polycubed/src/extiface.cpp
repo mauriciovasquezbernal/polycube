@@ -31,7 +31,8 @@ namespace polycubed {
 std::set<std::string> ExtIface::used_ifaces;
 
 ExtIface::ExtIface(const std::string &iface)
-    : iface_(iface), peer_(nullptr), logger(spdlog::get("polycubed")) {
+    : PeerIface(iface_mutex_),
+    iface_(iface), peer_(nullptr), logger(spdlog::get("polycubed")) {
   if (used_ifaces.count(iface) != 0) {
     throw std::runtime_error("Iface already in use");
   }
@@ -163,6 +164,14 @@ void ExtIface::set_next(uint16_t next, ProgramType type) {
     auto index_map = egress_program_.get_array_table<uint32_t>("index_map");
     index_map.update_value(0, value);
   }
+}
+
+void ExtIface::update_indexes() {
+
+}
+
+int ExtIface::calculate_cube_index(int index) {
+
 }
 
 }  // namespace polycubed
