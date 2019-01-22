@@ -82,6 +82,9 @@ class ServiceController {
   static void set_port_peer(Port &p, const std::string &peer_name);
 
   std::shared_ptr<ManagementInterface> managementInterface;
+
+  static std::unordered_map<std::string, std::unique_ptr<ExtIface>> ports_to_ifaces;
+
 private:
   std::string name_;
   std::string servicecontroller_;
@@ -97,7 +100,6 @@ private:
                               std::string &port);
 
   // these objects save all the common objects accross different services
-  static std::unordered_map<Guid, std::unique_ptr<Node>> ports_to_ifaces;
   static std::unordered_map<std::string, std::shared_ptr<BaseCubeIface>> cubes;
   static std::unordered_map<std::string, std::string> ports_to_ports;
 

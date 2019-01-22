@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 The Polycube Authors
+ * Copyright 2019 The Polycube Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,13 @@
 namespace polycube {
 namespace polycubed {
 
-class Node {
+class PeerIface {
  public:
-  Node() : index_(0){};
-  virtual ~Node(){};
-  virtual int get_fd() const = 0;
-  void set_index(uint16_t index_) {
-    this->index_ = index_;
-  };
-  uint16_t get_index() const {
-    return index_;
-  };
-
-  //static const int _POLYCUBE_MAX_NODES = 1024;
-
- private:
-  uint16_t index_;
+  virtual uint16_t get_index() const = 0;
+  virtual uint16_t get_port_id() const = 0;
+  virtual void set_next_index(uint16_t index) = 0;
+  virtual void set_peer_iface(PeerIface *peer) = 0;
+  virtual PeerIface *get_peer_iface() = 0;
 };
 
 }  // namespace polycubed
