@@ -5,24 +5,61 @@ A ``Cube`` is a logical entity, composed by a ``data plane`` (which can include 
 
 In addition, a Cube may include also a ``slow path`` in case some additional data plane-related code is required to overcome some limitations of the eBPF data plane.
 
-Following is an example including instances of Router and Bridge Cubes, and a possible topology that interconnects them.
+Types of Cubes
+--------------
+
+Polycube has two diferent kind of cubes, **standard cubes** and **transparent cubes**.
+
+Standard cubes have ports, they process the packets that arrive to those ports making a forwarding decision, i.e, sending the packet to another port.
+Examples of standard cubes are the router and bridge.
 
 ::
 
+             standard cube
+           +--------------+
+           |              |
+           | +----------+ |
+   port1---|-|          |-|---port3
+           | |   core   | |
+   port2---|-|          |-|---port3
+           | +----------+ |
+           |              |
+           +--------------+
 
-     veth1                                                             veth3
-       |                                                                |
-       |                                                                |
-       |                                                                |
-  +----------+        +----------+             +----------+        +----------+
-  |   br1    |        |    r1    |             |    r2    |        |   br2    |
-  |  bridge  |--------|  router  |-------------|  router  |--------|  bridge  |---------veth5
-  |  (cube)  |        |  (cube)  |             |  (cube)  |        |  (cube)  |
-  +---------.+        +----------+             +----------+        +----------+
-       |                                                                |
-       |                                                                |
-       |                                                                |
-     veth2                                                            veth4
+Transparent cubes are composed by the ingress and egress pipelines, when a packet comes to a pipeline the transparent cube can modify and let is pass or drop it.
+Transparent cubes can operate in two ways, attached to a standard cube port or to a netdev on the system.
+Examples of transparent cubes are nat, firewall and ddosmitigator.
+
+::
+
+        transparent cube
+      +-------------------+
+      |    +---------+    |
+      |  ->| ingress |->  |
+      | /  +---------+  \ |
+ <--->|*                 *|<--->
+      | \  +---------+  / |
+      |  <-| egress  |<-  |
+      |    +-------- +    |
+      +-------------------+
+
+Following is example topology composed by standard and transparent cubes.
+
+::
+
+     veth1                                                                 veth3
+       |                                                                    |
+       |                                                                    |
+       |                                                                    |
+  +---------+                      +---------+           +---------+   +---------+
+  |         |   +-----------+------+         |   +-------+         |   |         |
+  | bridge1 |---| firewall0 | nat0 | router1 |---| ddos0 | router2 |---| bridge2 |---veth5
+  |         |   +-----------+------+         |   +-------+         |   |         |
+  +---------+                      +---------+           +---------+   +---------+
+      |                                                                     |
+      |                                                                     |
+      |                                                                     |
+    veth2                                                                 veth4
 
 ``polycubectl ?`` shows available cubes installed on your system.
 
@@ -39,6 +76,7 @@ Cubes are created by the ``polycubectl <cubetype> add <cubename>`` command, for 
   polycubectl router add r1
   # create a simplebridge instance br1
   polycubectl simplebridge add br1
+
 
 Cubes Ports
 ^^^^^^^^^^^
@@ -94,14 +132,18 @@ Following is an example of how to set ports peer, referred to previous picture.
   polycubectl r1  ports port2 set peer=br1:port2
   polycubectl br1 ports port2 set peer=r1:port2
 
-Connect Disconnect primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Connect and  Disconnect primitives
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Connect and disconnect API provides a short way to connect ports, without setting up peers explicitly.
 
+Attach and Detach primitives
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These primitives allow to associate transparent cubes to standard cube's ports or to netdevs on the system.
+
 ::
 
-  polycubectl connect r1:port1 veth1
-  polycubectl connect r1:port3 eth0
+  polycubectl attach firewall1 r1:port2
 
-  polycubectl connect r1:port2 br1:port2
+  polycubectl attach firewall0 veth1
