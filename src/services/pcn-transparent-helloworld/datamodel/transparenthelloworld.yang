@@ -1,0 +1,37 @@
+module transparenthelloworld {
+  yang-version 1.1;
+  namespace "http://polycube.network/transparenthelloworld";
+  prefix "transparenthelloworld";
+
+  import polycube-transparent-base { prefix "basemodel"; }
+
+  organization "Polycube open source project";
+  description "YANG data model for the Polycube Transparent-Helloworld service";
+
+  basemodel:service-description "Transparent-Helloworld Service";
+  basemodel:service-version "1.0";
+  basemodel:service-name "transparenthelloworld";
+  basemodel:service-min-kernel-version "4.14.0";
+
+  uses "basemodel:transparent-base-yang-module";
+
+  leaf ingress-action {
+    type enumeration {
+      enum DROP;
+      enum PASS;
+      enum SLOWPATH;
+    }
+    default PASS;
+    description "Action performed on ingress packets";
+  }
+
+  leaf egress-action {
+    type enumeration {
+      enum DROP;
+      enum PASS;
+      enum SLOWPATH;
+    }
+    default PASS;
+    description "Action performed on egress packets";
+  }
+}
