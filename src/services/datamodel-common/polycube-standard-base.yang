@@ -1,11 +1,11 @@
 module polycube-standard-base {
   yang-version 1.1;
   namespace "http://polycube.network/polycube-standard-base";
-  prefix "standard-base";
+  prefix "polycube-standard-base";
 
   import polycube-base { prefix "polycube-base"; }
 
-  grouping standard-base-yang-module {
+  grouping polycube-standard-base-yang-module {
     uses "polycube-base:base-yang-module";
     list ports {
       key "name";
