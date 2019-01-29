@@ -22,6 +22,7 @@ namespace swagger {
 namespace server {
 namespace model {
 
+<<<<<<< daaddbb4973e2c95e7113942c3ac7d440ec9a501
 <<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
 PortsJsonObject::PortsJsonObject() {
 
@@ -43,19 +44,26 @@ void PortsJsonObject::validateKeys() {
   if (!m_nameIsSet) {
     throw std::runtime_error("Variable name is required");
 =======
+=======
+>>>>>>> Ported simplebridge
 PortsJsonObject::PortsJsonObject() :
   m_nameIsSet (false),
   m_uuidIsSet (false),
   m_statusIsSet (false),
   m_peerIsSet (false),
+<<<<<<< daaddbb4973e2c95e7113942c3ac7d440ec9a501
   m_typeIsSet (false),
   m_ipIsSet (false) { }
+=======
+  m_macIsSet (false) { }
+>>>>>>> Ported simplebridge
 
 PortsJsonObject::PortsJsonObject(nlohmann::json& val) :
   m_nameIsSet (false),
   m_uuidIsSet (false),
   m_statusIsSet (false),
   m_peerIsSet (false),
+<<<<<<< daaddbb4973e2c95e7113942c3ac7d440ec9a501
   // Mandatory item
   m_type (string_to_PortsTypeEnum(val.at("type").get<std::string>())),
   m_typeIsSet (true),
@@ -95,6 +103,24 @@ PortsJsonObject::PortsJsonObject(nlohmann::json& val) :
   if (val.count("ip") != 0) {
     setIp(val.at("ip").get<std::string>());
 >>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
+=======
+  m_macIsSet (false) {
+
+  if (val.count("uuid") != 0) {
+    setUuid(val.at("uuid").get<std::string>());
+  }
+
+  if (val.count("status") != 0) {
+    setStatus(string_to_PortsStatusEnum(val.at("status").get<std::string>()));
+  }
+
+  if (val.count("peer") != 0) {
+    setPeer(val.at("peer").get<std::string>());
+  }
+
+  if (val.count("mac") != 0) {
+    setMac(val.at("mac").get<std::string>());
+>>>>>>> Ported simplebridge
   }
 }
 
@@ -122,6 +148,7 @@ nlohmann::json PortsJsonObject::toJson() const {
   return val;
 }
 
+<<<<<<< daaddbb4973e2c95e7113942c3ac7d440ec9a501
 <<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
 void PortsJsonObject::fromJson(nlohmann::json& val) {
   for(nlohmann::json::iterator it = val.begin(); it != val.end(); ++it) {
@@ -156,6 +183,8 @@ void PortsJsonObject::fromJson(nlohmann::json& val) {
 
 =======
 >>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
+=======
+>>>>>>> Ported simplebridge
 nlohmann::json PortsJsonObject::helpKeys() {
   nlohmann::json val = nlohmann::json::object();
 
