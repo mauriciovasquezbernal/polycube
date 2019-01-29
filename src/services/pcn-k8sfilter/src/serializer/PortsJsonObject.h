@@ -103,6 +103,10 @@ public:
   static PortsTypeEnum string_to_PortsTypeEnum(const std::string &str);
 
 
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-k8sfilter/src/serializer/PortsJsonObject.h
+=======
+
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.h
 private:
   std::string m_name;
   bool m_nameIsSet;
@@ -114,6 +118,11 @@ private:
   bool m_peerIsSet;
   PortsTypeEnum m_type;
   bool m_typeIsSet;
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-k8sfilter/src/serializer/PortsJsonObject.h
+=======
+  std::string m_ip;
+  bool m_ipIsSet;
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.h
 };
 
 }

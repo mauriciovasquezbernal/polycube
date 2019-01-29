@@ -22,6 +22,7 @@ namespace swagger {
 namespace server {
 namespace model {
 
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
 PortsJsonObject::PortsJsonObject() {
 
   m_nameIsSet = false;
@@ -41,15 +42,44 @@ void PortsJsonObject::validateKeys() {
 
   if (!m_nameIsSet) {
     throw std::runtime_error("Variable name is required");
+=======
+PortsJsonObject::PortsJsonObject() :
+  m_nameIsSet (false),
+  m_uuidIsSet (false),
+  m_statusIsSet (false),
+  m_peerIsSet (false),
+  m_typeIsSet (false),
+  m_ipIsSet (false) { }
+
+PortsJsonObject::PortsJsonObject(nlohmann::json& val) :
+  m_nameIsSet (false),
+  m_uuidIsSet (false),
+  m_statusIsSet (false),
+  m_peerIsSet (false),
+  // Mandatory item
+  m_type (string_to_PortsTypeEnum(val.at("type").get<std::string>())),
+  m_typeIsSet (true),
+  m_ipIsSet (false) {
+
+  if (val.count("uuid") != 0) {
+    setUuid(val.at("uuid").get<std::string>());
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
   }
+
+  if (val.count("status") != 0) {
+    setStatus(string_to_PortsStatusEnum(val.at("status").get<std::string>()));
+  }
+
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
 }
+=======
+  if (val.count("peer") != 0) {
+    setPeer(val.at("peer").get<std::string>());
+  }
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
 
-void PortsJsonObject::validateMandatoryFields() {
 
-}
-
-void PortsJsonObject::validateParams() {
-
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
   if (m_uuidIsSet) {
     std::string patter_value = R"PATTERN([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})PATTERN";
     std::regex e (patter_value);
@@ -61,16 +91,17 @@ void PortsJsonObject::validateParams() {
     std::regex e (patter_value);
     if (!std::regex_match(m_mac, e))
       throw std::runtime_error("Variable mac has not a valid format");
+=======
+  if (val.count("ip") != 0) {
+    setIp(val.at("ip").get<std::string>());
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
   }
 }
 
 nlohmann::json PortsJsonObject::toJson() const {
   nlohmann::json val = nlohmann::json::object();
 
-  if (m_nameIsSet) {
-    val["name"] = m_name;
-  }
-
+  val["name"] = m_name;
   if (m_uuidIsSet) {
     val["uuid"] = m_uuid;
   }
@@ -91,6 +122,7 @@ nlohmann::json PortsJsonObject::toJson() const {
   return val;
 }
 
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
 void PortsJsonObject::fromJson(nlohmann::json& val) {
   for(nlohmann::json::iterator it = val.begin(); it != val.end(); ++it) {
     std::string key = it.key();
@@ -122,6 +154,8 @@ void PortsJsonObject::fromJson(nlohmann::json& val) {
   }
 }
 
+=======
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
 nlohmann::json PortsJsonObject::helpKeys() {
   nlohmann::json val = nlohmann::json::object();
 
@@ -197,9 +231,7 @@ bool PortsJsonObject::nameIsSet() const {
   return m_nameIsSet;
 }
 
-void PortsJsonObject::unsetName() {
-  m_nameIsSet = false;
-}
+
 
 
 
@@ -278,8 +310,48 @@ void PortsJsonObject::unsetPeer() {
 
 
 
+<<<<<<< cf26e23739128b4756e7a231adc61b4a45c59087:src/services/pcn-simplebridge/src/serializer/PortsJsonObject.cpp
 std::string PortsJsonObject::getMac() const {
   return m_mac;
+=======
+PortsTypeEnum PortsJsonObject::getType() const {
+  return m_type;
+}
+
+void PortsJsonObject::setType(PortsTypeEnum value) {
+  m_type = value;
+  m_typeIsSet = true;
+}
+
+bool PortsJsonObject::typeIsSet() const {
+  return m_typeIsSet;
+}
+
+
+
+std::string PortsJsonObject::PortsTypeEnum_to_string(const PortsTypeEnum &value){
+  switch(value){
+    case PortsTypeEnum::EXTERNAL:
+      return std::string("external");
+    case PortsTypeEnum::INTERNAL:
+      return std::string("internal");
+    default:
+      throw std::runtime_error("Bad Ports type");
+  }
+}
+
+PortsTypeEnum PortsJsonObject::string_to_PortsTypeEnum(const std::string &str){
+  if (JsonObjectBase::iequals("external", str))
+    return PortsTypeEnum::EXTERNAL;
+  if (JsonObjectBase::iequals("internal", str))
+    return PortsTypeEnum::INTERNAL;
+  throw std::runtime_error("Ports type is invalid");
+}
+
+
+std::string PortsJsonObject::getIp() const {
+  return m_ip;
+>>>>>>> Ported nat:src/services/pcn-nat/src/serializer/PortsJsonObject.cpp
 }
 
 void PortsJsonObject::setMac(std::string value) {
@@ -302,4 +374,5 @@ void PortsJsonObject::unsetMac() {
 }
 }
 }
+
 
