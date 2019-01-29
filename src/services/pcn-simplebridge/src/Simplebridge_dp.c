@@ -37,12 +37,22 @@ struct fwd_entry {
 } __attribute__((packed));
 
 BPF_TABLE("hash", __be64, struct fwd_entry, fwdtable, 1024);
+BPF_TABLE("percpu_array", int, uint64_t, timestamp, 1);
 
 struct eth_hdr {
   __be64   dst:48;
   __be64   src:48;
   __be16   proto;
 } __attribute__((packed));
+
+static __always_inline u64 time_get_ns() {
+  int key = 0;
+  u64 *ts = timestamp.lookup(&key);
+  if (ts)
+    return *ts;
+
+  return 0;
+}
 
 static __always_inline
 int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
@@ -60,7 +70,8 @@ int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
 
   // LEARNING PHASE
   __be64 src_key = eth->src;
-  u64 now = bpf_ktime_get_ns();
+  //u64 now = bpf_ktime_get_ns();
+  u64 now = time_get_ns();
 
   struct fwd_entry e; // used to update the entry in the fdb
 
