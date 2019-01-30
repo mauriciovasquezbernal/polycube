@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 The Polycube Authors
+ * Copyright 2018 The Polycube Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,23 @@
  */
 #pragma once
 
-#include <string>
+#include <memory>
 
-#include "management_interface.h"
-
-namespace polycube::service {
-class CubeFactory;
-}
+#include "polycube/services/management_interface.h"
+#include "server/include/Resources/Endpoint/Service.h"
 
 namespace polycube::polycubed {
-
-class PolycubedCore;
-
-class ManagementLib : public ManagementInterface {
+class ManagementInterface : public service::ManagementInterface {
  public:
-  ManagementLib(const std::string &uri, const std::string &base_url,
-                const std::string &name, const PolycubedCore *core);
-  ~ManagementLib() final = default;
+  inline const std::shared_ptr<polycubed::Rest::Resources::Endpoint::Service>
+  get_service() {
+    return service_;
+  }
 
-  void load();
-
-  ServiceMetadata init(service::CubeFactory *factory, std::string logfile);
-
- private:
-
-  const std::string uri_;
-  const std::string base_url_;
-  const std::string name_;
-  const PolycubedCore *const core_;
+ protected:
+  ~ManagementInterface() override {
+    service_->ClearCubes();
+  };
+  std::shared_ptr<polycubed::Rest::Resources::Endpoint::Service> service_;
 };
-
 }  // namespace polycube::polycubed
