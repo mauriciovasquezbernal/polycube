@@ -22,6 +22,11 @@ configure_file(version.cpp.in version.cpp)
 # this is needed for load_services.cpp that is located under a different folder
 include_directories(.)
 
+find_package(OpenSSL REQUIRED)
+include_directories(OPENSSL_INCLUDE_DIR)
+
+add_subdirectory(server)
+
 set(polycubed_sources
   bcc_mutex.cpp
   config.cpp
