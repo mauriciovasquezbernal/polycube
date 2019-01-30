@@ -97,6 +97,16 @@ Install dependencies
         curl uuid-dev build-essential autoconf libtool
 
 
+Install libyang
+^^^^^^^^^^^^^^^^
+
+::
+
+    # Install libyang (library used for YANG parsing)
+    sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/liberouter/xUbuntu_16.04/ /' > /etc/apt/sources.list.d/home:liberouter.list"
+    sudo apt-get update
+    sudo apt-get install libyang
+
 Install pistache
 ^^^^^^^^^^^^^^^^
 
