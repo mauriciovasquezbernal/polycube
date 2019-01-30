@@ -23,6 +23,7 @@ configure_file(version.cpp.in version.cpp)
 include_directories(.)
 
 set(polycubed_sources
+  test_standalone.cpp
   bcc_mutex.cpp
   config.cpp
   polycubed.cpp
