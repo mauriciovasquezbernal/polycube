@@ -43,16 +43,16 @@ using polycube::service::PortType;
 namespace polycube {
 namespace polycubed {
 
+class PolycubedCore;
+
 using json = nlohmann::json;
 
-using service::ManagementInterface;
-using service::ServiceMetadata;
-
-enum class ServiceControllerType {LIBRARY, DAEMON};
+enum class ServiceControllerType { LIBRARY, DAEMON };
 
 class ServiceController {
  public:
-  ServiceController(const std::string &name, const std::string &path);
+  ServiceController(const std::string &name, const std::string &path,
+                    const std::string &base_url, ServiceControllerType type);
   ~ServiceController();
 
   json to_json() const;
@@ -69,12 +69,18 @@ class ServiceController {
   std::string get_datamodel() const;
   std::vector<std::shared_ptr<CubeIface>> get_cubes();
 
-  // Instantiate the managementGrpc Object, using the endpoint url
-  void connect(std::string PolycubeEndpoint);
+  /// Loads a service controller.
+  /// \throws std::invalid_argument if the YANG data model is invalid.
+  /// \throws std::runtime_error if the kernel installed version is older than
+  /// the one required by the service.
+  /// \throws std::domain_error if the service is somewhat malformed.
+  void connect(const PolycubedCore *core);
   ServiceControllerType get_type() const;
+  const std::shared_ptr<ManagementInterface> get_management_interface() const;
 
   static std::shared_ptr<CubeIface> get_cube(const std::string &name);
   static std::vector<std::shared_ptr<CubeIface>> get_all_cubes();
+  static bool exists_cube(const std::string &name);
 
   static void register_cube(std::shared_ptr<CubeIface> cube,
                             const std::string &service);
@@ -89,6 +95,7 @@ class ServiceController {
   std::shared_ptr<ManagementInterface> management_interface_;
   std::string name_;
   std::string servicecontroller_;
+  std::string base_url_;
   std::string datamodel_;
   ServiceMetadata service_md_;
   ServiceControllerType type_;  // daemon|library
