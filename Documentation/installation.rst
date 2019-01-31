@@ -97,14 +97,23 @@ Install dependencies
         curl uuid-dev build-essential autoconf libtool
 
 
+Install libyang
+^^^^^^^^^^^^^^^^
+
+::
+
+    # Install libyang (library used for YANG parsing)
+    sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/liberouter/xUbuntu_16.04/ /' > /etc/apt/sources.list.d/home:liberouter.list"
+    sudo apt-get update
+    sudo apt-get install libyang
+
 Install pistache
 ^^^^^^^^^^^^^^^^
 
 ::
 
     # Install Pistache (a library to create web servers that is used in polycubed)
-    # we use a custom version until security is added in main repo
-    git clone https://github.com/mauriciovasquezbernal/pistache.git
+    git clone https://github.com/oktal/pistache.git
     cd pistache
     git submodule update --init
     mkdir build &&  cd build
