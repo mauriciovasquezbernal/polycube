@@ -25,10 +25,12 @@
 #include <pistache/endpoint.h>
 #include <pistache/http.h>
 #include <pistache/router.h>
-#include <spdlog/spdlog.h>
 #include <algorithm>
-#include "polycube/services/json.hpp"
-#include "polycubed_core.h"
+#include <memory>
+#include <string>
+#include "polycube/services/json-3.5.hpp"
+
+#include <spdlog/spdlog.h>
 
 // #define LOG_DEBUG_
 

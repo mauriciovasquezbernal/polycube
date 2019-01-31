@@ -20,19 +20,14 @@
 #include <algorithm>
 #include <list>
 
-#include "polycube/services/http.h"
 #include "polycube/services/guid.h"
-#include "polycube/services/json.hpp"
+#include "polycube/services/json-3.5.hpp"
 #include "service_controller.h"
 
 #include "extiface_info.h"
-#include "cube_factory_impl.h"
 #include "netlink.h"
 
 using json = nlohmann::json;
-
-using polycube::service::HttpHandleRequest;
-using polycube::service::HttpHandleResponse;
 
 namespace polycube {
 namespace polycubed {

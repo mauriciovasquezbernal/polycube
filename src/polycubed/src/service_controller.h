@@ -16,9 +16,11 @@
 
 #pragma once
 
-#include <spdlog/spdlog.h>
 #include <memory>
 #include <mutex>
+#include <vector>
+#include <string>
+#include <spdlog/spdlog.h>
 
 #include "polycube/services/port_iface.h"
 
@@ -26,14 +28,14 @@ using polycube::service::PortType;
 using polycube::service::PortIface;
 
 #include "polycube/services/guid.h"
-#include "polycube/services/json.hpp"
-#include "polycube/services/management_interface.h"
+#include "polycube/services/json-3.5.hpp"
+#include "management_interface.h"
 #include "cube_factory_impl.h"
 #include "cube_tc.h"
 #include "cube_xdp.h"
-#include "port_host.h"
 #include "extiface_tc.h"
 #include "extiface_xdp.h"
+#include "port_host.h"
 #include "port_tc.h"
 #include "port_xdp.h"
 #include "utils.h"

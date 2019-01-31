@@ -22,7 +22,7 @@
 #include <set>
 #include <string>
 
-#include "polycube/services/json.hpp"
+#include "polycube/services/json-3.5.hpp"
 
 using json = nlohmann::json;
 

@@ -26,7 +26,6 @@
 #include <ifaddrs.h>
 #include <linux/if_link.h>
 #include <netdb.h>
-#include <spdlog/spdlog.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>

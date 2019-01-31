@@ -19,8 +19,8 @@
 
 #include "config.h"
 #include "cube_factory_impl.h"
-#include "port_xdp.h"
 #include "netlink.h"
+#include "port_xdp.h"
 
 #include <regex>
 

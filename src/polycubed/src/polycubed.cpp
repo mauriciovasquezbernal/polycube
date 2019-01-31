@@ -27,7 +27,7 @@
 #include <errno.h>
 
 #include "config.h"
-#include "polycube/services/json.hpp"
+#include "polycube/services/json-3.5.hpp"
 #include "rest_server.h"
 #include "utils.h"
 #include "version.h"
