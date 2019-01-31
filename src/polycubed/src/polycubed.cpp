@@ -239,8 +239,6 @@ int main(int argc, char *argv[]) {
   }
 
   core = new PolycubedCore();
-  // register services that are shipped with polycube
-  load_services(*core);
 
   // setup rest server
   int thr = 4;
@@ -255,6 +253,9 @@ int main(int argc, char *argv[]) {
                    config.getCACertPath(), config.getCertWhitelistPath(),
                    config.getCertBlacklistPath());
   restserver->start();
+
+  // register services that are shipped with polycube
+  load_services(*core);
 
   // pause the execution of current thread until ctrl+c
   pause();
