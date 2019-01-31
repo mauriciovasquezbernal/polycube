@@ -44,10 +44,12 @@ class PolycubedCore {
   void add_servicectrl(const std::string &name, ServiceControllerType type,
                        const std::string &base_url, const std::string &path);
   std::string get_servicectrl(const std::string &name);
+  const ServiceController &get_service_controller(const std::string &name) const;
   std::string get_servicectrls();
   std::list<std::string> get_servicectrls_names();
   std::list<ServiceController const *> get_servicectrls_list() const;
   void delete_servicectrl(const std::string &name);
+  void clear_servicectrl_list();
 
   std::string get_cube(const std::string &name);
   std::string get_cubes();
