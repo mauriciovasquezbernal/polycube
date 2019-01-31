@@ -17,13 +17,17 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+
 #include <algorithm>
 #include <list>
+#include <string>
+#include <unordered_map>
 
 #include "polycube/services/guid.h"
 #include "polycube/services/json-3.5.hpp"
 #include "service_controller.h"
 
+#include "cube_factory_impl.h"
 #include "extiface_info.h"
 #include "netlink.h"
 
@@ -35,13 +39,10 @@ namespace polycubed {
 class PolycubedCore {
  public:
   PolycubedCore();
-  ~PolycubedCore();
+  ~PolycubedCore() = default;
 
-  void control_handler(const std::string &service,
-                       const HttpHandleRequest &request,
-                       HttpHandleResponse &response);
-
-  void add_servicectrl(const std::string &name, const std::string &path);
+  void add_servicectrl(const std::string &name, ServiceControllerType type,
+                       const std::string &base_url, const std::string &path);
   std::string get_servicectrl(const std::string &name);
   std::string get_servicectrls();
   std::list<std::string> get_servicectrls_names();
@@ -63,8 +64,7 @@ class PolycubedCore {
   std::string get_polycubeendpoint();
 
  private:
-  bool try_to_set_peer(const std::string &peer1,
-                       const std::string &peer2);
+  bool try_to_set_peer(const std::string &peer1, const std::string &peer2);
 
   std::unordered_map<std::string, ServiceController> servicectrls_map_;
   std::string polycubeendpoint_;

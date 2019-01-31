@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "rest_server.h"
+
+#include <string>
+#include <vector>
+
+#include "polycubed_core.h"
 #include "service_controller.h"
 #include "version.h"
 

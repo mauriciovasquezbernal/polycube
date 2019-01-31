@@ -23,8 +23,6 @@ namespace polycubed {
 
 PolycubedCore::PolycubedCore() : logger(spdlog::get("polycubed")) {}
 
-PolycubedCore::~PolycubedCore() {}
-
 void PolycubedCore::set_polycubeendpoint(std::string &polycube) {
   polycubeendpoint_ = polycube;
 }

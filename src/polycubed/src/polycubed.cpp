@@ -32,7 +32,10 @@
 #include "utils.h"
 #include "version.h"
 
-#include <spdlog/spdlog.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_sinks.h>
+
+#include "polycubed_core.h"
 
 #define REQUIRED_POLYCUBED_KERNEL ("4.14.0")
 

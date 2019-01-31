@@ -24,8 +24,8 @@
 
 #include "polycube/services/port_iface.h"
 
-using polycube::service::PortType;
 using polycube::service::PortIface;
+using polycube::service::PortType;
 
 #include "polycube/services/guid.h"
 #include "polycube/services/json-3.5.hpp"
@@ -84,19 +84,18 @@ class ServiceController {
 
   static void set_port_peer(Port &p, const std::string &peer_name);
 
-  std::shared_ptr<ManagementInterface> managementInterface;
-private:
+ private:
+  std::shared_ptr<spdlog::logger> l;
+  std::shared_ptr<ManagementInterface> management_interface_;
   std::string name_;
   std::string servicecontroller_;
   std::string datamodel_;
   ServiceMetadata service_md_;
   ServiceControllerType type_;  // daemon|library
-  std::shared_ptr<spdlog::logger> l;
   CubeFactoryImpl factory_;
 
   // returns true if peer is in the cube:port format
-  static bool parse_peer_name(const std::string &peer,
-                              std::string &cube,
+  static bool parse_peer_name(const std::string &peer, std::string &cube,
                               std::string &port);
 
   // these objects save all the common objects accross different services
