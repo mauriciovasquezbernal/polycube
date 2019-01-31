@@ -224,69 +224,8 @@ void RestServer::logJson(json j) {
 #endif
 }
 
-// the default handler is in charge to understand to witch service forward the
-// request.
-// we use one single handler as a workaroud, otherwise we have to use different
-// callbacks @ runtime
-void RestServer::default_handler(const Rest::Request &request,
-                                 Http::ResponseWriter response) {
-  logRequest(request);
-
-  // find service
-  std::string url = request.resource();
-  if (url.find(base) == std::string::npos) {
-    response.send(Http::Code::Not_Found);
-    return;
-  }
-  std::size_t base_pos = url.find(base) + base.length() + 1;
-  std::size_t end_pos = url.find('/', base_pos + 1);
-  std::string service = url.substr(base_pos, end_pos - base_pos);
-
-  // convert between Rest::Request and HttpHandleRequest.
-  // TODO: it could be implemented in a more elegant way (constructor)
-  std::string new_url = url.substr(base_pos);
-  auto help = request.query().get("help").getOrElse("NO_HELP");
-  HelpType help_type;
-  if (help.compare("NO_HELP") == 0)
-    help_type = HelpType::NO_HELP;
-  else if (help.compare("SHOW") == 0)
-    help_type = HelpType::SHOW;
-  else if (help.compare("ADD") == 0)
-    help_type = HelpType::ADD;
-  else if (help.compare("DEL") == 0)
-    help_type = HelpType::DEL;
-  else if (help.compare("SET") == 0)
-    help_type = HelpType::SET;
-  else if (help.compare("NONE") == 0)
-    help_type = HelpType::NONE;
-  else {
-    response.send(Http::Code::Bad_Request);
-    return;
-  }
-
-  /*
-   * this is probably stupid but has to be done because methods are in different
-   * namespaces
-   */
-  polycube::service::Http::Method method =
-      static_cast<polycube::service::Http::Method>(request.method());
-
-  HttpHandleRequest req(method, new_url, request.body(), help_type);
-
-  HttpHandleResponse res;
-
-  try {
-    core.control_handler(service, req, res);
-    Http::Code code = Http::Code(res.code());
-    response.send(code, res.body());
-  } catch (const std::runtime_error &e) {
-    logger->error("{0}", e.what());
-    response.send(Http::Code::Bad_Request, e.what());
-  }
-}
-
-void RestServer::root_handler(const Rest::Request &request,
-                              Http::ResponseWriter response) {
+void RestServer::root_handler(const Pistache::Rest::Request &request,
+                              Pistache::Http::ResponseWriter response) {
   HelpType help_type;
   auto help = request.query().get("help").getOrElse("NO_HELP");
   if (help == "NO_HELP") {
