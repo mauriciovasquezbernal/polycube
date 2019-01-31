@@ -22,10 +22,11 @@
 #include "service_controller.h"
 #include "version.h"
 
-namespace polycube {
-namespace polycubed {
+#include "polycube/services/response.h"
+#include "server/include/Resources/Data/AbstractFactory.h"
+#include "server/include/Server/ResponseGenerator.h"
 
-using polycube::service::HelpType;
+namespace polycube::polycubed {
 
 std::shared_ptr<Pistache::Rest::Router> RestServer::router_;
 std::string RestServer::whitelist_cert_path;
@@ -151,10 +152,9 @@ void RestServer::shutdown() {
 }
 
 void RestServer::setup_routes() {
-  using namespace Pistache::Rest;
-
-  Routes::Options(router, base + std::string("/"),
-                  Routes::bind(&RestServer::root_handler, this));
+  using Pistache::Rest::Routes::bind;
+  router_->options(base + std::string("/"),
+                   bind(&RestServer::root_handler, this));
   // servicectrls
   router_->post(base + std::string("/services"),
                 bind(&RestServer::post_servicectrl, this));
@@ -206,8 +206,7 @@ void RestServer::setup_routes() {
   router_->options(base + std::string("/topology"),
                    bind(&RestServer::topology_help, this));
 
-  // control api, forward to the corresponsent service
-  router.addCustomHandler(Routes::bind(&RestServer::default_handler, this));
+  router_->addNotFoundHandler(bind(&RestServer::redirect, this));
 }
 
 void RestServer::logRequest(const Pistache::Rest::Request &request) {
@@ -220,8 +219,8 @@ void RestServer::logRequest(const Pistache::Rest::Request &request) {
 
 void RestServer::logJson(json j) {
 #ifdef LOG_DEBUG_JSON_
-  logger->debug("JSON Dump: "); << std::endl;
-  logger->debug(j.dump(4));
+  logger->debug("JSON Dump: ") << std::endl;
+  logger->debug(j.dump());
 #endif
 }
 
@@ -290,9 +289,9 @@ void RestServer::root_handler(const Rest::Request &request,
                               Http::ResponseWriter response) {
   HelpType help_type;
   auto help = request.query().get("help").getOrElse("NO_HELP");
-  if (help.compare("NO_HELP") == 0)
+  if (help == "NO_HELP") {
     help_type = HelpType::NO_HELP;
-  else if (help.compare("NONE") == 0)
+  } else if (help == "NONE") {
     help_type = HelpType::NONE;
   else {
     response.send(Http::Code::Bad_Request);
@@ -612,5 +611,34 @@ void RestServer::topology_help(const Pistache::Rest::Request &request,
   response.send(Pistache::Http::Code::Ok, j.dump());
 }
 
-}  // namespace polycubed
-}  // namespace polycube
+void RestServer::redirect(const Pistache::Rest::Request &request,
+                          Pistache::Http::ResponseWriter response) {
+  if (request.headers().has("Referer") ||
+      request.headers().rawList().count("Referer") == 1) {
+    response.send(Pistache::Http::Code::Not_Found,
+                  "Cannot find a matching route.");
+    return;
+  }
+  std::string url = request.resource();
+  if (url.find(base) == std::string::npos) {
+    response.send(Pistache::Http::Code::Not_Found,
+                  "Cannot find a matching route.");
+    return;
+  }
+  auto base_length = base.length();
+  std::string cube_name =
+      url.substr(base_length, url.find('/', base_length) - base_length);
+  const auto &service_name = ServiceController::get_cube_service(cube_name);
+  if (service_name.length() == 0) {
+    response.send(Pistache::Http::Code::Not_Found,
+                  "No cube found named " + cube_name);
+    return;
+  }
+  std::string redirect = request.resource();
+  redirect.insert(base_length, service_name + '/');
+  auto location = Pistache::Http::Header::Location(redirect);
+  response.headers().add<Pistache::Http::Header::Location>(location);
+  response.send(Pistache::Http::Code::Permanent_Redirect);
+}
+
+}  // namespace polycube::polycubed

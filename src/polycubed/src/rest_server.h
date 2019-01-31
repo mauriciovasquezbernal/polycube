@@ -42,8 +42,8 @@
 using json = nlohmann::json;
 using Pistache::Rest::Request;
 
-namespace polycube {
-namespace polycubed {
+namespace polycube::polycubed {
+class PolycubedCore;
 
 class RestServer {
  public:
@@ -136,5 +136,4 @@ class RestServer {
   std::shared_ptr<spdlog::logger> logger;
 };
 
-}  // namespace polycubed
-}  // namespace polycube
+}  // namespace polycube::polycubed
