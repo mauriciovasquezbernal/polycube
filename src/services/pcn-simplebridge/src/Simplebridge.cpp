@@ -54,7 +54,7 @@ void Simplebridge::updateTimestampTimer() {
   do {
     sleep(1);
     updateTimestamp();
-  } while (!quit_thread_)
+  } while (!quit_thread_);
 }
 
 /*
@@ -69,7 +69,7 @@ void Simplebridge::updateTimestamp() {
     clock_gettime(CLOCK_MONOTONIC, &now_timespec);
     const uint64_t SEC2NANOSEC = 1000000000ULL;
     uint64_t now = now_timespec.tv_sec*SEC2NANOSEC + now_timespec.tv_nsec;
-    auto timestamp_table = get_percpuarray_table<uint64_t>("timestamp");
+    auto timestamp_table = get_array_table<uint64_t>("timestamp");
     timestamp_table.set(0, now);
   } catch (...) {
     logger()->error("Error while updating the timestamp table");

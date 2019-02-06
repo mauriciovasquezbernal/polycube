@@ -32,12 +32,12 @@
 #define REASON_FLOODING 0x01
 
 struct fwd_entry {
-  u64 timestamp;
+  u32 timestamp;
   u32 port;
-} __attribute__((packed));
+} __attribute__((packed, aligned(8)));
 
 BPF_TABLE("hash", __be64, struct fwd_entry, fwdtable, 1024);
-BPF_TABLE("percpu_array", int, uint64_t, timestamp, 1);
+BPF_TABLE("array", int, uint64_t, timestamp, 1);
 
 struct eth_hdr {
   __be64   dst:48;
@@ -70,7 +70,7 @@ int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
 
   // LEARNING PHASE
   __be64 src_key = eth->src;
-  u64 now = time_get_ns();
+  u32 now = time_get_ns();
 
   struct fwd_entry *entry = fwdtable.lookup(&src_key);
 
@@ -100,14 +100,6 @@ int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
   u64 timestamp = entry->timestamp;
 
   // Check if the entry is still valid (not too old)
-  // Warning: the bpf_ktime_get_ns() used before is not monotonic and it may return
-  //  a value that is older than a previously returned value. So, we have to add
-  //  the very strange check 'now < timestamp' to handle this special case
-  if (now < timestamp) {
-    pcn_log(ctx, LOG_TRACE, "Entry is valid (but 'now < timestamp'). FORWARDING");
-    goto FORWARD;
-  }
-
   if ((now - timestamp) > FDB_TIMEOUT*1000000000ULL) {
     pcn_log(ctx, LOG_TRACE, "Entry is too old. FLOODING");
     fwdtable.delete(&dst_mac);
