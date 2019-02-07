@@ -26,7 +26,7 @@ Transparenthelloworld::Transparenthelloworld(const std::string name,
   : TransparentCube(name,
                     {transparent_helloworld_code_ingress},
                     {transparent_helloworld_code_egress},
-                    type, conf.getPolycubeLoglevel()) {
+                    type, conf.getPolycubeLoglevel()), quit_thread_(false) {
   logger()->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [Transparenthelloworld] [%n] [%l] %v");
   logger()->info("Creating Transparenthelloworld instance");
 
@@ -34,7 +34,10 @@ Transparenthelloworld::Transparenthelloworld(const std::string name,
   setEgressAction(conf.getEgressAction());
 }
 
-Transparenthelloworld::~Transparenthelloworld() { }
+Transparenthelloworld::~Transparenthelloworld() {
+  quit_thread_ = true;
+  timestamp_update_thread_.join();
+}
 
 void Transparenthelloworld::update(const TransparenthelloworldJsonObject &conf) {
   if (conf.loglevelIsSet()) {
@@ -84,6 +87,8 @@ void Transparenthelloworld::attach() {
   } catch(const std::exception &e) {
     logger()->warn("Error getting parent parameter: {}", e.what());
   }
+
+  timestamp_update_thread_ = std::thread(&Transparenthelloworld::ThreadHandler, this);
 }
 
 TransparenthelloworldIngressActionEnum Transparenthelloworld::getIngressAction(){
@@ -108,4 +113,23 @@ void Transparenthelloworld::setEgressAction(const TransparenthelloworldEgressAct
   uint8_t action = static_cast<uint8_t>(value);
   auto t = get_array_table<uint8_t>("action_map", 0, ProgramType::EGRESS);
   t.set(0x0, action);
+}
+
+struct counter {
+  uint64_t pad;
+  uint64_t counter;
+} __attribute__((packed));
+
+void Transparenthelloworld::ThreadHandler() {
+  sleep(3);
+  //uint64_t counter = 0;
+  uint32_t h1 = 0, h2 = 0;
+  struct counter counter = {0, 0};
+  while (!quit_thread_) {
+    auto t = get_array_table<struct counter>("counter", 0, ProgramType::INGRESS);
+    counter.counter = (uint64_t) h2 << 32 | h1;
+    t.set(0, counter);
+    h1++;
+    h2 = 2*h1;
+  }
 }

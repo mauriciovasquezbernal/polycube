@@ -29,6 +29,15 @@ enum {
 
 BPF_ARRAY(action_map, uint8_t, 1);
 
+struct counter {
+  uint64_t pad;
+  uint64_t counter;
+} __attribute__((packed, aligned(8)));
+
+BPF_ARRAY(counter, struct counter, 1);
+
+//BPF_ARRAY(counter, uint64_t, 1);
+
 static int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
   unsigned int zero = 0;
   uint8_t *action = action_map.lookup(&zero);
@@ -37,6 +46,21 @@ static int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
   if (!action) {
     return RX_DROP;
   }
+
+  int key = 0;
+  //u64 *c = counter.lookup(&key);
+  struct counter *c = counter.lookup(&key);
+  if (c) {
+    //u64 t = *c;
+    u32 h2, h1;
+    h1 = c->counter & 0xffffffff;
+    h2 = c->counter >> 32;
+
+    if (h2 != 2*h1) {
+      bpf_trace_printk("Here we are!\n");
+    }
+  }
+
 
  // what action should be performed in the packet?
   switch(*action) {

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <thread>
 
 #include "../interface/TransparenthelloworldInterface.h"
 
@@ -76,4 +77,9 @@ class Transparenthelloworld : public polycube::service::TransparentCube, public 
   /// </summary>
   TransparenthelloworldEgressActionEnum getEgressAction() override;
   void setEgressAction(const TransparenthelloworldEgressActionEnum &value) override;
+
+ private:
+  void ThreadHandler();
+  std::thread timestamp_update_thread_;
+  std::atomic<bool> quit_thread_;
 };
