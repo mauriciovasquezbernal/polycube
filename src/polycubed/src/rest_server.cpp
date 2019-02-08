@@ -23,15 +23,17 @@ namespace polycubed {
 
 using polycube::service::HelpType;
 
-// these variables are neded in the client_verify callback, they need to be static.
+// these variables are neded in the client_verify callback, they need to be
+// static.
 std::string RestServer::whitelist_cert_path;
 std::string RestServer::blacklist_cert_path;
 
 // start http server for Management APIs
 // Incapsultate a core object // TODO probably there are best ways...
 RestServer::RestServer(Address addr, PolycubedCore &core)
-    : core(core), httpEndpoint(std::make_shared<Http::Endpoint>(addr)),
-    logger(spdlog::get("polycubed")) {
+    : core(core),
+      httpEndpoint(std::make_shared<Http::Endpoint>(addr)),
+      logger(spdlog::get("polycubed")) {
   logger->info("rest server listening on '{0}:{1}'", addr.host(), addr.port());
 }
 
@@ -53,7 +55,7 @@ static X509_STORE_CTX *load_certificates(const char *path) {
 #endif
 
 static bool lookup_cert_match(X509_STORE_CTX *ctx, X509 *x) {
-  STACK_OF(X509) *certs;
+  STACK_OF(X509) * certs;
   X509 *xtmp = NULL;
   int i;
   bool found = false;
@@ -76,7 +78,7 @@ static bool lookup_cert_match(X509_STORE_CTX *ctx, X509 *x) {
 int RestServer::client_verify_callback(int preverify_ok, X509_STORE_CTX *ctx) {
   int depth = X509_STORE_CTX_get_error_depth(ctx);
   if (depth == 0) {
-    X509* cert = X509_STORE_CTX_get_current_cert(ctx);
+    X509 *cert = X509_STORE_CTX_get_current_cert(ctx);
     X509_STORE_CTX *list;
 
     // if certificate is on white list we don't care about preverify
@@ -98,8 +100,7 @@ int RestServer::client_verify_callback(int preverify_ok, X509_STORE_CTX *ctx) {
   return preverify_ok;
 }
 
-void RestServer::init(size_t thr,
-                      const std::string &server_cert,
+void RestServer::init(size_t thr, const std::string &server_cert,
                       const std::string &server_key,
                       const std::string &root_ca_cert,
                       const std::string &whitelist_cert_path_,
@@ -162,10 +163,10 @@ void RestServer::setup_routes() {
               Routes::bind(&RestServer::get_cube, this));
 
   Routes::Options(router, base + std::string("/cubes"),
-              Routes::bind(&RestServer::cubes_help, this));
+                  Routes::bind(&RestServer::cubes_help, this));
 
   Routes::Options(router, base + std::string("/cubes/:cubeName"),
-              Routes::bind(&RestServer::cube_help, this));
+                  Routes::bind(&RestServer::cube_help, this));
 
   // netdevs
   Routes::Get(router, base + std::string("/netdevs"),
@@ -201,7 +202,7 @@ void RestServer::setup_routes() {
 }
 
 void RestServer::logRequest(const Rest::Request &request) {
-  //logger->debug("{0} : {1}", request.method(), request.resource());
+// logger->debug("{0} : {1}", request.method(), request.resource());
 #ifdef LOG_DEBUG_REQUEST_
   logger->debug(request.method() + ": " + request.resource());
   logger->debug(request.body());
@@ -210,7 +211,8 @@ void RestServer::logRequest(const Rest::Request &request) {
 
 void RestServer::logJson(json j) {
 #ifdef LOG_DEBUG_JSON_
-  logger->debug("JSON Dump: "); << std::endl;
+  logger->debug("JSON Dump: ");
+  << std::endl;
   logger->debug(j.dump(4));
 #endif
 }
@@ -291,17 +293,18 @@ void RestServer::root_handler(const Rest::Request &request,
 
   if (help_type == HelpType::NONE) {
     json j;
-     auto services = core.get_servicectrls_list();
-     for (auto &it : services) {
-       std::string service_name = it->get_name();
-       j["params"][service_name]["name"] = service_name;
-       j["params"][service_name]["simpletype"] = "service";
-       j["params"][service_name]["type"] = "leaf";
-       j["params"][service_name]["description"] = it->get_description();
-       j["params"][service_name]["version"] = it->get_version();
-       j["params"][service_name]["pyang_repo_id"] = it->get_pyang_git_repo_id();
-       j["params"][service_name]["swagger_codegen_repo_id"] = it->get_swagger_codegen_git_repo_id();
-     }
+    auto services = core.get_servicectrls_list();
+    for (auto &it : services) {
+      std::string service_name = it->get_name();
+      j["params"][service_name]["name"] = service_name;
+      j["params"][service_name]["simpletype"] = "service";
+      j["params"][service_name]["type"] = "leaf";
+      j["params"][service_name]["description"] = it->get_description();
+      j["params"][service_name]["version"] = it->get_version();
+      j["params"][service_name]["pyang_repo_id"] = it->get_pyang_git_repo_id();
+      j["params"][service_name]["swagger_codegen_repo_id"] =
+          it->get_swagger_codegen_git_repo_id();
+    }
 
     response.send(Http::Code::Ok, j.dump(4));
   }
@@ -364,7 +367,7 @@ void RestServer::delete_servicectrl(const Rest::Request &request,
 }
 
 void RestServer::get_cubes(const Rest::Request &request,
-                               Http::ResponseWriter response) {
+                           Http::ResponseWriter response) {
   logRequest(request);
   try {
     std::string retJsonStr = core.get_cubes();
@@ -376,7 +379,7 @@ void RestServer::get_cubes(const Rest::Request &request,
 }
 
 void RestServer::get_cube(const Rest::Request &request,
-                              Http::ResponseWriter response) {
+                          Http::ResponseWriter response) {
   logRequest(request);
   try {
     auto name = request.param(":cubeName").as<std::string>();
@@ -389,7 +392,7 @@ void RestServer::get_cube(const Rest::Request &request,
 }
 
 void RestServer::cubes_help(const Rest::Request &request,
-                    Http::ResponseWriter response) {
+                            Http::ResponseWriter response) {
   json j = json::object();
   auto help = request.query().get("help").getOrElse("NO_HELP");
   if (help != "NONE" && help != "SHOW") {
@@ -424,7 +427,7 @@ void RestServer::cubes_help(const Rest::Request &request,
 }
 
 void RestServer::cube_help(const Rest::Request &request,
-                    Http::ResponseWriter response) {
+                           Http::ResponseWriter response) {
   json j = json::object();
   auto help = request.query().get("help").getOrElse("NO_HELP");
   if (help != "NONE") {
@@ -436,7 +439,6 @@ void RestServer::cube_help(const Rest::Request &request,
 
   response.send(Http::Code::Ok, j.dump(4));
 }
-
 
 void RestServer::get_netdevs(const Rest::Request &request,
                              Http::ResponseWriter response) {
@@ -464,7 +466,7 @@ void RestServer::get_netdev(const Rest::Request &request,
 }
 
 void RestServer::netdevs_help(const Rest::Request &request,
-                    Http::ResponseWriter response) {
+                              Http::ResponseWriter response) {
   json j = json::object();
   auto help = request.query().get("help").getOrElse("NO_HELP");
   if (help != "NONE" && help != "SHOW") {
