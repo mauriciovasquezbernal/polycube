@@ -26,6 +26,7 @@
 #include "polycube/services/guid.h"
 #include "polycube/services/json.hpp"
 #include "service_controller.h"
+#include "base_model.h"
 
 #include "cube_factory_impl.h"
 #include "extiface_info.h"
@@ -38,7 +39,7 @@ namespace polycubed {
 
 class PolycubedCore {
  public:
-  PolycubedCore();
+  PolycubedCore(BaseModel *base_model);
   ~PolycubedCore() = default;
 
   void add_servicectrl(const std::string &name, ServiceControllerType type,
@@ -65,12 +66,15 @@ class PolycubedCore {
   void set_polycubeendpoint(std::string &polycube);
   std::string get_polycubeendpoint();
 
+  BaseModel *base_model();
+
  private:
   bool try_to_set_peer(const std::string &peer1, const std::string &peer2);
 
   std::unordered_map<std::string, ServiceController> servicectrls_map_;
   std::string polycubeendpoint_;
   std::shared_ptr<spdlog::logger> logger;
+  BaseModel *base_model_;
 };
 
 }  // namespace polycubed

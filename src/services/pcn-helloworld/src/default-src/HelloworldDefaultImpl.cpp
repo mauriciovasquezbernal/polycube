@@ -57,6 +57,8 @@ HelloworldLoglevelEnum Helloworld::getLoglevel(){
 }
 
 void Helloworld::setLoglevel(const HelloworldLoglevelEnum &value){
+
+  std::cout << "***setting loglevel in helloworld***" << std::endl;
   // This method sets the loglevel value.
     switch(value){
       case HelloworldLoglevelEnum::TRACE:

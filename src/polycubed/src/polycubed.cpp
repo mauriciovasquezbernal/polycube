@@ -240,7 +240,10 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  core = new PolycubedCore();
+  auto base_model = new BaseModel();
+  core = new PolycubedCore(base_model);
+
+  std::cout << "core is " << core << std::endl;
 
   // setup rest server
   int thr = 4;

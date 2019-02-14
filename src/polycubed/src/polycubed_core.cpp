@@ -21,7 +21,8 @@
 namespace polycube {
 namespace polycubed {
 
-PolycubedCore::PolycubedCore() : logger(spdlog::get("polycubed")) {}
+PolycubedCore::PolycubedCore(BaseModel *base_model)
+  : base_model_(base_model), logger(spdlog::get("polycubed")) {}
 
 void PolycubedCore::set_polycubeendpoint(std::string &polycube) {
   polycubeendpoint_ = polycube;
@@ -273,5 +274,10 @@ void PolycubedCore::disconnect(const std::string &peer1,
   try_to_set_peer(peer1, "");
   try_to_set_peer(peer2, "");
 }
+
+BaseModel *PolycubedCore::base_model() {
+  return base_model_;
+}
+
 }  // namespace polycubed
 }  // namespace polycube

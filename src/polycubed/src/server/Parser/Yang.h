@@ -48,7 +48,8 @@ using ValidatorsType =
 
 class Yang {
  public:
-  explicit Yang(std::unique_ptr<Resources::Data::AbstractFactory> &&factory);
+  explicit Yang(std::unique_ptr<Resources::Data::AbstractFactory> &&factory,
+                std::unique_ptr<Resources::Data::AbstractFactory> &&base_model_factory);
   const std::string ServiceName();
   const std::string DataModel();
   const std::shared_ptr<Resources::Endpoint::Service> Parse(
@@ -56,6 +57,7 @@ class Yang {
 
  private:
   const std::unique_ptr<Resources::Data::AbstractFactory> factory_;
+  const std::unique_ptr<Resources::Data::AbstractFactory> base_model_factory_;
   const lys_module *module_;
   /** Stores typedef name and associated list of Validators */
   std::unordered_map<std::string, ValidatorList>
@@ -114,46 +116,46 @@ class Yang {
 
   void ParseNode(const lys_node *data, std::queue<std::string> parsed_names,
                  const std::shared_ptr<Resources::Body::ParentResource> &parent,
-                 bool generate_endpoint) const;
+                 bool generate_endpoint, bool base_model) const;
 
   void ParseContainer(
       const lys_node_container *data, std::queue<std::string> parsed_names,
       const std::shared_ptr<Resources::Body::ParentResource> &parent,
-      bool generate_endpoint) const;
+      bool generate_endpoint, bool base_model) const;
 
   void ParseUses(const lys_node_uses *group,
                  std::queue<std::string> parsed_names,
                  const std::shared_ptr<Resources::Body::ParentResource> &parent,
-                 bool generate_endpoint) const;
+                 bool generate_endpoint, bool base_model) const;
 
   void ParseList(const lys_node_list *list,
                  std::queue<std::string> parsed_names,
                  const std::shared_ptr<Resources::Body::ParentResource> &parent,
-                 bool generate_endpoint) const;
+                 bool generate_endpoint, bool base_model) const;
 
   void ParseLeaf(const lys_node_leaf *leaf,
                  std::queue<std::string> parsed_names,
                  const std::shared_ptr<Resources::Body::ParentResource> &parent,
-                 bool generate_endpoint) const;
+                 bool generate_endpoint, bool base_model) const;
 
   void ParseLeafList(
       const lys_node_leaflist *leaflist, std::queue<std::string> parsed_names,
       const std::shared_ptr<Resources::Body::ParentResource> &parent,
-      bool generate_endpoint) const;
+      bool generate_endpoint, bool base_model) const;
 
   void ParseChoice(
       const lys_node_choice *choice, std::queue<std::string> parsed_names,
       const std::shared_ptr<Resources::Body::ParentResource> &parent,
-      bool generate_endpoint) const;
+      bool generate_endpoint, bool base_model) const;
 
   void ParseCase(const lys_node_case *case_node,
                  std::queue<std::string> parsed_names,
                  const std::shared_ptr<Resources::Body::ParentResource> &parent,
-                 bool generate_endpoint) const;
+                 bool generate_endpoint, bool base_model) const;
 
   void ParseAny(const lys_node_anydata *data, std::queue<std::string> parsed_names,
                 const std::shared_ptr<Resources::Body::ParentResource> &parent,
-                bool generate_endpoint) const;
+                bool generate_endpoint, bool base_model) const;
 
   void ParseRpcAction(
       const lys_node_rpc_action *data, std::queue<std::string> parsed_names,
