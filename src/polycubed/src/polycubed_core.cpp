@@ -15,9 +15,14 @@
  */
 
 #include "polycubed_core.h"
+#include "config.h"
 #include "rest_server.h"
 
+#include <pistache/client.h>
 #include <regex>
+
+using namespace Pistache::Http;
+using namespace configuration;
 
 namespace polycube {
 namespace polycubed {
@@ -418,26 +423,29 @@ void PolycubedCore::detach(const std::string &cube_name,
 }
 
 std::string PolycubedCore::get_cube_port_parameter(
-    const std::string &cube, const std::string &port,
+    const std::string &cube, const std::string &port_name,
     const std::string &parameter) {
-  std::string service_name = ServiceController::get_cube_service(cube);
-  auto iter = servicectrls_map_.find(service_name);
-  if (iter == servicectrls_map_.end()) {
-    throw std::runtime_error("Service Controller does not exist");
-  }
+  Pistache::Http::Client client;
 
-  ServiceController &s = iter->second;
+  auto opts = Pistache::Http::Client::options();
+  client.init(opts);
 
-  std::string url("/" + service_name + "/" + cube + "/ports/" + port + "/" +
-                  parameter);
-  auto req = HttpHandleRequest(polycube::service::Http::Method::Get, url, "");
-  auto res = HttpHandleResponse();
+  auto port = std::to_string(config.getServerPort());
 
-  s.managementInterface->control_handler(req, res);
+  std::string url("http://127.0.0.1:" + port + "/polycube/v1/" + cube +
+                  "/ports/" + port_name + "/" + parameter);
 
-  if (res.code() != polycube::service::Http::Code::Ok) {
-    throw std::runtime_error("Error getting port parameter: " + res.body());
-  }
+  auto resp = client.get(url).send();
+
+  Pistache::Http::Response res;
+
+  resp.then([&](Pistache::Http::Response response) { res = response; },
+            Pistache::Async::IgnoreException);
+
+  Pistache::Async::Barrier<Pistache::Http::Response> barrier(resp);
+  barrier.wait();
+
+  client.shutdown();
 
   return res.body();
 }
@@ -445,23 +453,33 @@ std::string PolycubedCore::get_cube_port_parameter(
 std::string PolycubedCore::set_cube_parameter(const std::string &cube,
                                               const std::string &parameter,
                                               const std::string &value) {
-  std::string service_name = ServiceController::get_cube_service(cube);
-  auto iter = servicectrls_map_.find(service_name);
-  if (iter == servicectrls_map_.end()) {
-    throw std::runtime_error("Service Controller does not exist");
-  }
+  Pistache::Http::Client client;
 
-  ServiceController &s = iter->second;
+  auto opts = Pistache::Http::Client::options();
+  client.init(opts);
 
-  std::string url("/" + service_name + "/" + cube + "/" + parameter);
-  auto req = HttpHandleRequest(polycube::service::Http::Method::Put, url, "");
-  auto res = HttpHandleResponse();
+  auto port = std::to_string(config.getServerPort());
 
-  s.managementInterface->control_handler(req, res);
+  std::string url("http://127.0.0.1:" + port + "/polycube/v1/" + cube + "/" +
+                  parameter);
 
-  if (res.code() != polycube::service::Http::Code::Ok) {
+  auto resp = client.put(url).body(value).send();
+
+  Pistache::Http::Response res;
+
+  resp.then([&](Pistache::Http::Response response) { res = response; },
+            Pistache::Async::IgnoreException);
+
+  Pistache::Async::Barrier<Pistache::Http::Response> barrier(resp);
+  barrier.wait();
+
+  client.shutdown();
+
+  if (res.code() != Pistache::Http::Code::Ok) {
     throw std::runtime_error("Error setting cube parameter: " + res.body());
   }
+
+  return res.body();
 }
 
 void PolycubedCore::set_rest_server(RestServer *rest_server) {
