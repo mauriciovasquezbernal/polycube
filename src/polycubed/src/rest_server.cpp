@@ -201,10 +201,10 @@ void RestServer::setup_routes() {
                 bind(&RestServer::disconnect, this));
 
   // attach & detach
-  Routes::Post(router, base + std::string("/attach"),
-               Routes::bind(&RestServer::attach, this));
-  Routes::Post(router, base + std::string("/detach"),
-               Routes::bind(&RestServer::detach, this));
+  router_->post(base + std::string("/attach"),
+               bind(&RestServer::attach, this));
+  router_->post(base + std::string("/detach"),
+               bind(&RestServer::detach, this));
 
   // topology
   router_->get(base + std::string("/topology"),
@@ -581,14 +581,14 @@ void RestServer::attach(const Pistache::Rest::Request &request,
   nlohmann::json val = nlohmann::json::parse(request.body());
 
   if (val.find("cube") == val.end()) {
-    response.send(Http::Code::Bad_Request, "Cube is missing");
+    response.send(Pistache::Http::Code::Bad_Request, "Cube is missing");
     return;
   }
 
   cube = val.at("cube");
 
   if (val.find("port") == val.end()) {
-    response.send(Http::Code::Bad_Request, "Port is missing");
+    response.send(Pistache::Http::Code::Bad_Request, "Port is missing");
     return;
   }
 
@@ -603,7 +603,7 @@ void RestServer::attach(const Pistache::Rest::Request &request,
 
   if (val.find("after") != val.end()) {
     if (position_) {
-      response.send(Http::Code::Bad_Request,
+      response.send(Pistache::Http::Code::Bad_Request,
                     "position and after cannot be used together");
       return;
     }
@@ -614,13 +614,13 @@ void RestServer::attach(const Pistache::Rest::Request &request,
 
   if (val.find("before") != val.end()) {
     if (position_) {
-      response.send(Http::Code::Bad_Request,
+      response.send(Pistache::Http::Code::Bad_Request,
                     "position and before cannot be used together");
       return;
     }
 
     if (!other.empty()) {
-      response.send(Http::Code::Bad_Request,
+      response.send(Pistache::Http::Code::Bad_Request,
                     "after and before cannot be used together");
       return;
     }
@@ -631,10 +631,10 @@ void RestServer::attach(const Pistache::Rest::Request &request,
 
   try {
     core.attach(cube, port, position, other);
-    response.send(Http::Code::Ok);
+    response.send(Pistache::Http::Code::Ok);
   } catch (const std::runtime_error &e) {
     logger->error("{0}", e.what());
-    response.send(Http::Code::Bad_Request, e.what());
+    response.send(Pistache::Http::Code::Bad_Request, e.what());
   }
 }
 
@@ -647,14 +647,14 @@ void RestServer::detach(const Pistache::Rest::Request &request,
   nlohmann::json val = nlohmann::json::parse(request.body());
 
   if (val.find("cube") == val.end()) {
-    response.send(Http::Code::Bad_Request, "Cube is missing");
+    response.send(Pistache::Http::Code::Bad_Request, "Cube is missing");
     return;
   }
 
   cube = val.at("cube");
 
   if (val.find("port") == val.end()) {
-    response.send(Http::Code::Bad_Request, "Port is missing");
+    response.send(Pistache::Http::Code::Bad_Request, "Port is missing");
     return;
   }
 
@@ -662,10 +662,10 @@ void RestServer::detach(const Pistache::Rest::Request &request,
 
   try {
     core.detach(cube, port);
-    response.send(Http::Code::Ok);
+    response.send(Pistache::Http::Code::Ok);
   } catch (const std::runtime_error &e) {
     logger->error("{0}", e.what());
-    response.send(Http::Code::Bad_Request, e.what());
+    response.send(Pistache::Http::Code::Bad_Request, e.what());
   }
 }
 
