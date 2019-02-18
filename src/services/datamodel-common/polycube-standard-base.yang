@@ -5,7 +5,7 @@ module polycube-standard-base {
 
   import polycube-base { prefix "polycube-base"; }
 
-  grouping polycube-standard-base-yang-module {
+  grouping standard-base-yang-module {
     uses "polycube-base:base-yang-module";
     list ports {
       key "name";
