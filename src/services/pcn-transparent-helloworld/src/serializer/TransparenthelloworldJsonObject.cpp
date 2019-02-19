@@ -22,55 +22,47 @@ namespace swagger {
 namespace server {
 namespace model {
 
-TransparenthelloworldJsonObject::TransparenthelloworldJsonObject() {
+TransparenthelloworldJsonObject::TransparenthelloworldJsonObject() : 
+  m_nameIsSet (false),
+  m_uuidIsSet (false),
+  m_type (CubeType::TC),
+  m_typeIsSet (true),
+  m_loglevel (TransparenthelloworldLoglevelEnum::INFO),
+  m_loglevelIsSet (true),
+  m_ingressAction (TransparenthelloworldIngressActionEnum::PASS),
+  m_ingressActionIsSet (true),
+  m_egressAction (TransparenthelloworldEgressActionEnum::PASS),
+  m_egressActionIsSet (true) { }
 
-  m_nameIsSet = false;
+TransparenthelloworldJsonObject::TransparenthelloworldJsonObject(nlohmann::json& val) : 
+  m_nameIsSet (false),
+  m_uuidIsSet (false),
+  // Item with a default value, granted to be part of the request body
+  m_type (string_to_CubeType(val.at("type").get<std::string>())),
+  m_typeIsSet (true),
+  // Item with a default value, granted to be part of the request body
+  m_loglevel (string_to_TransparenthelloworldLoglevelEnum(val.at("loglevel").get<std::string>())),
+  m_loglevelIsSet (true),
+  // Item with a default value, granted to be part of the request body
+  m_ingressAction (string_to_TransparenthelloworldIngressActionEnum(val.at("ingress-action").get<std::string>())),
+  m_ingressActionIsSet (true),
+  // Item with a default value, granted to be part of the request body
+  m_egressAction (string_to_TransparenthelloworldEgressActionEnum(val.at("egress-action").get<std::string>())),
+  m_egressActionIsSet (true) { 
 
-  m_uuidIsSet = false;
-
-  m_type = CubeType::TC;
-  m_typeIsSet = false;
-
-  m_loglevel = TransparenthelloworldLoglevelEnum::INFO;
-  m_loglevelIsSet = false;
-
-  m_ingressAction = TransparenthelloworldIngressActionEnum::PASS;
-  m_ingressActionIsSet = false;
-
-  m_egressAction = TransparenthelloworldEgressActionEnum::PASS;
-  m_egressActionIsSet = false;
-}
-
-TransparenthelloworldJsonObject::~TransparenthelloworldJsonObject() {}
-
-void TransparenthelloworldJsonObject::validateKeys() {
-
-  if (!m_nameIsSet) {
-    throw std::runtime_error("Variable name is required");
+  if (val.count("uuid") != 0) {
+    setUuid(val.at("uuid"));
   }
-}
 
-void TransparenthelloworldJsonObject::validateMandatoryFields() {
 
-}
 
-void TransparenthelloworldJsonObject::validateParams() {
 
-  if (m_uuidIsSet) {
-    std::string patter_value = R"PATTERN([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})PATTERN";
-    std::regex e (patter_value);
-    if (!std::regex_match(m_uuid, e))
-      throw std::runtime_error("Variable uuid has not a valid format");
-  }
 }
 
 nlohmann::json TransparenthelloworldJsonObject::toJson() const {
   nlohmann::json val = nlohmann::json::object();
 
-  if (m_nameIsSet) {
-    val["name"] = m_name;
-  }
-
+  val["name"] = m_name;
   if (m_uuidIsSet) {
     val["uuid"] = m_uuid;
   }
@@ -93,41 +85,6 @@ nlohmann::json TransparenthelloworldJsonObject::toJson() const {
 
 
   return val;
-}
-
-void TransparenthelloworldJsonObject::fromJson(nlohmann::json& val) {
-  for(nlohmann::json::iterator it = val.begin(); it != val.end(); ++it) {
-    std::string key = it.key();
-    bool found = (std::find(allowedParameters_.begin(), allowedParameters_.end(), key) != allowedParameters_.end());
-    if (!found) {
-      throw std::runtime_error(key + " is not a valid parameter");
-      return;
-    }
-  }
-
-  if (val.find("name") != val.end()) {
-    setName(val.at("name"));
-  }
-
-  if (val.find("uuid") != val.end()) {
-    setUuid(val.at("uuid"));
-  }
-
-  if (val.find("type") != val.end()) {
-    setType(string_to_CubeType(val.at("type")));
-  }
-
-  if (val.find("loglevel") != val.end()) {
-    setLoglevel(string_to_TransparenthelloworldLoglevelEnum(val.at("loglevel")));
-  }
-
-  if (val.find("ingress-action") != val.end()) {
-    setIngressAction(string_to_TransparenthelloworldIngressActionEnum(val.at("ingress-action")));
-  }
-
-  if (val.find("egress-action") != val.end()) {
-    setEgressAction(string_to_TransparenthelloworldEgressActionEnum(val.at("egress-action")));
-  }
 }
 
 nlohmann::json TransparenthelloworldJsonObject::helpKeys() {
@@ -218,9 +175,7 @@ bool TransparenthelloworldJsonObject::nameIsSet() const {
   return m_nameIsSet;
 }
 
-void TransparenthelloworldJsonObject::unsetName() {
-  m_nameIsSet = false;
-}
+
 
 
 
