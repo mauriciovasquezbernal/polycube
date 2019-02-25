@@ -51,7 +51,7 @@ void create_helloworld_by_id(const std::string &name, const HelloworldJsonObject
       throw std::runtime_error("There is already an Cube with name " + name);
     }
   }
-  auto ptr = std::make_shared<Helloworld>(name, jsonObject, jsonObject.getType());
+  auto ptr = std::make_shared<Helloworld>(name, jsonObject);
   std::unordered_map<std::string, std::shared_ptr<Helloworld>>::iterator iter;
   bool inserted;
 
@@ -73,11 +73,6 @@ void delete_helloworld_by_id(const std::string &name) {
     throw std::runtime_error("Cube " + name + " does not exist");
   }
   cubes.erase(name);
-}
-
-std::string read_helloworld_uuid_by_id(const std::string &name) {
-  auto m = get_cube(name);
-  return m->getUuid();
 }
 
 std::vector<HelloworldJsonObject> read_helloworld_list_by_id() {
@@ -130,7 +125,7 @@ std::vector<nlohmann::fifo_map<std::string, std::string>> read_helloworld_ports_
   auto m = get_cube(name);
   for(auto &i : m->getPortsList()){
     nlohmann::fifo_map<std::string, std::string> m;
-    m["name"] = i->getName();
+    m["name"] = i->name/*getName*/();
     r.push_back(std::move(m));
   }
   return r;
@@ -157,30 +152,6 @@ void replace_helloworld_ports_by_id(const std::string &name, const std::string &
 void delete_helloworld_ports_by_id(const std::string &name, const std::string &portsName) {
   auto m = get_cube(name);
   m->delPorts(portsName);
-}
-
-std::string read_helloworld_ports_peer_by_id(const std::string &name, const std::string &portsName) {
-  auto m = get_cube(name);
-  auto p = m->getPorts(portsName);
-  return p->getPeer();
-}
-
-PortsStatusEnum read_helloworld_ports_status_by_id(const std::string &name, const std::string &portsName) {
-  auto m = get_cube(name);
-  auto p = m->getPorts(portsName);
-  return p->getStatus();
-}
-
-std::string read_helloworld_ports_uuid_by_id(const std::string &name, const std::string &portsName) {
-  auto m = get_cube(name);
-  auto p = m->getPorts(portsName);
-  return p->getUuid();
-}
-
-void update_helloworld_ports_peer_by_id(const std::string &name, const std::string &portsName, const std::string &peer) {
-  auto m = get_cube(name);
-  auto p = m->getPorts(portsName);
-  p->setPeer(peer);
 }
 
 
@@ -217,46 +188,6 @@ read_helloworld_action_by_id(const std::string &name) {
 HelloworldJsonObject
 read_helloworld_by_id(const std::string &name) {
   return get_cube(name)->toJsonObject();
-
-}
-
-
-
-
-/**
-* @brief   Read loglevel by ID
-*
-* Read operation of resource: loglevel*
-*
-* @param[in] name ID of name
-*
-* Responses:
-* HelloworldLoglevelEnum
-*/
-HelloworldLoglevelEnum
-read_helloworld_loglevel_by_id(const std::string &name) {
-  auto helloworld = get_cube(name);
-  return helloworld->getLoglevel();
-
-}
-
-
-
-
-/**
-* @brief   Read type by ID
-*
-* Read operation of resource: type*
-*
-* @param[in] name ID of name
-*
-* Responses:
-* CubeType
-*/
-CubeType
-read_helloworld_type_by_id(const std::string &name) {
-  auto helloworld = get_cube(name);
-  return helloworld->getType();
 
 }
 
@@ -326,25 +257,6 @@ std::vector<nlohmann::fifo_map<std::string, std::string>> update_helloworld_list
   std::vector<nlohmann::fifo_map<std::string, std::string>> r;
 }
 #endif
-
-
-/**
-* @brief   Update loglevel by ID
-*
-* Update operation of resource: loglevel*
-*
-* @param[in] name ID of name
-* @param[in] value Defines the logging level of a service instance, from none (OFF) to the most verbose (TRACE)
-*
-* Responses:
-*
-*/
-void
-update_helloworld_loglevel_by_id(const std::string &name, const HelloworldLoglevelEnum &value) {
-  auto helloworld = get_cube(name);
-
-  helloworld->setLoglevel(value);
-}
 
 
 

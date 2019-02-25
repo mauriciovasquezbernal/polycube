@@ -22,47 +22,14 @@ namespace swagger {
 namespace server {
 namespace model {
 
-PortsJsonObject::PortsJsonObject() :
-  m_nameIsSet (false),
-  m_uuidIsSet (false),
-  m_statusIsSet (false),
-  m_peerIsSet (false) { }
+PortsJsonObject::PortsJsonObject() { }
 
 PortsJsonObject::PortsJsonObject(nlohmann::json& val) :
-  m_nameIsSet (false),
-  m_uuidIsSet (false),
-  m_statusIsSet (false),
-  m_peerIsSet (false) {
-
-  if (val.count("uuid") != 0) {
-    setUuid(val.at("uuid").get<std::string>());
-  }
-
-  if (val.count("status") != 0) {
-    setStatus(string_to_PortsStatusEnum(val.at("status").get<std::string>()));
-  }
-
-  if (val.count("peer") != 0) {
-    setPeer(val.at("peer").get<std::string>());
-  }
-}
+ base_(val) {}
 
 nlohmann::json PortsJsonObject::toJson() const {
-  nlohmann::json val = nlohmann::json::object();
-
-  val["name"] = m_name;
-  if (m_uuidIsSet) {
-    val["uuid"] = m_uuid;
-  }
-
-  if (m_statusIsSet) {
-    val["status"] = PortsStatusEnum_to_string(m_status);
-  }
-
-  if (m_peerIsSet) {
-    val["peer"] = m_peer;
-  }
-
+  nlohmann::json val;
+  val.update(base_);
 
   return val;
 }
@@ -137,85 +104,13 @@ bool PortsJsonObject::nameIsSet() const {
   return m_nameIsSet;
 }
 
-
-
-
-
-std::string PortsJsonObject::getUuid() const {
-  return m_uuid;
+const nlohmann::json &PortsJsonObject::getBase() const {
+  return base_;
 }
 
-void PortsJsonObject::setUuid(std::string value) {
-  m_uuid = value;
-  m_uuidIsSet = true;
+void PortsJsonObject::setBase(const nlohmann::json &base) {
+  base_ = base;
 }
-
-bool PortsJsonObject::uuidIsSet() const {
-  return m_uuidIsSet;
-}
-
-void PortsJsonObject::unsetUuid() {
-  m_uuidIsSet = false;
-}
-
-
-
-PortsStatusEnum PortsJsonObject::getStatus() const {
-  return m_status;
-}
-
-void PortsJsonObject::setStatus(PortsStatusEnum value) {
-  m_status = value;
-  m_statusIsSet = true;
-}
-
-bool PortsJsonObject::statusIsSet() const {
-  return m_statusIsSet;
-}
-
-void PortsJsonObject::unsetStatus() {
-  m_statusIsSet = false;
-}
-
-std::string PortsJsonObject::PortsStatusEnum_to_string(const PortsStatusEnum &value){
-  switch(value){
-    case PortsStatusEnum::UP:
-      return std::string("up");
-    case PortsStatusEnum::DOWN:
-      return std::string("down");
-    default:
-      throw std::runtime_error("Bad Ports status");
-  }
-}
-
-PortsStatusEnum PortsJsonObject::string_to_PortsStatusEnum(const std::string &str){
-  if (JsonObjectBase::iequals("up", str))
-    return PortsStatusEnum::UP;
-  if (JsonObjectBase::iequals("down", str))
-    return PortsStatusEnum::DOWN;
-  throw std::runtime_error("Ports status is invalid");
-}
-
-
-std::string PortsJsonObject::getPeer() const {
-  return m_peer;
-}
-
-void PortsJsonObject::setPeer(std::string value) {
-  m_peer = value;
-  m_peerIsSet = true;
-}
-
-bool PortsJsonObject::peerIsSet() const {
-  return m_peerIsSet;
-}
-
-void PortsJsonObject::unsetPeer() {
-  m_peerIsSet = false;
-}
-
-
-
 
 }
 }

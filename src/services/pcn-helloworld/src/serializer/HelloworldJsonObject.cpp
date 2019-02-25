@@ -23,35 +23,17 @@ namespace server {
 namespace model {
 
 HelloworldJsonObject::HelloworldJsonObject() :
-  m_nameIsSet (false),
-  m_uuidIsSet (false),
-  m_type (CubeType::TC),
-  m_typeIsSet (true),
-  m_loglevel (HelloworldLoglevelEnum::INFO),
-  m_loglevelIsSet (true),
+  base_({}),
   m_portsIsSet (false),
   m_action (HelloworldActionEnum::DROP),
   m_actionIsSet (true) { }
 
 HelloworldJsonObject::HelloworldJsonObject(nlohmann::json& val) :
-  m_nameIsSet (false),
-  m_uuidIsSet (false),
-  // Item with a default value, granted to be part of the request body
-  m_type (string_to_CubeType(val.at("type").get<std::string>())),
-  m_typeIsSet (true),
-  // Item with a default value, granted to be part of the request body
-  m_loglevel (string_to_HelloworldLoglevelEnum(val.at("loglevel").get<std::string>())),
-  m_loglevelIsSet (true),
+  base_(val),
   m_portsIsSet (false),
   // Item with a default value, granted to be part of the request body
   m_action (string_to_HelloworldActionEnum(val.at("action").get<std::string>())),
   m_actionIsSet (true) {
-
-  if (val.count("uuid") != 0) {
-    setUuid(val.at("uuid").get<std::string>());
-  }
-
-
 
   m_ports.clear();
   for (auto& item : val["ports"]) {
@@ -59,25 +41,32 @@ HelloworldJsonObject::HelloworldJsonObject(nlohmann::json& val) :
     m_ports.push_back(newItem);
   }
   m_portsIsSet = !m_ports.empty();
+}
 
+std::string HelloworldJsonObject::getName() const {
+  return m_name;
+}
 
+void HelloworldJsonObject::setName(std::string value) {
+  m_name = value;
+  m_nameIsSet = true;
+}
+
+bool HelloworldJsonObject::nameIsSet() const {
+  return m_nameIsSet;
+}
+
+const nlohmann::json &HelloworldJsonObject::getBase() const {
+  return base_;
+}
+
+void HelloworldJsonObject::setBase(const nlohmann::json &base) {
+  base_ = base;
 }
 
 nlohmann::json HelloworldJsonObject::toJson() const {
-  nlohmann::json val = nlohmann::json::object();
-
-  val["name"] = m_name;
-  if (m_uuidIsSet) {
-    val["uuid"] = m_uuid;
-  }
-
-  if (m_typeIsSet) {
-    val["type"] = CubeType_to_string(m_type);
-  }
-
-  if (m_loglevelIsSet) {
-    val["loglevel"] = HelloworldLoglevelEnum_to_string(m_loglevel);
-  }
+  nlohmann::json val;
+  val.update(base_);
 
   {
     nlohmann::json jsonArray;
@@ -92,7 +81,6 @@ nlohmann::json HelloworldJsonObject::toJson() const {
   if (m_actionIsSet) {
     val["action"] = HelloworldActionEnum_to_string(m_action);
   }
-
 
   return val;
 }
@@ -172,157 +160,6 @@ std::vector<std::string> HelloworldJsonObject::helpActions() {
   return val;
 }
 
-std::string HelloworldJsonObject::getName() const {
-  return m_name;
-}
-
-void HelloworldJsonObject::setName(std::string value) {
-  m_name = value;
-  m_nameIsSet = true;
-}
-
-bool HelloworldJsonObject::nameIsSet() const {
-  return m_nameIsSet;
-}
-
-
-
-
-
-std::string HelloworldJsonObject::getUuid() const {
-  return m_uuid;
-}
-
-void HelloworldJsonObject::setUuid(std::string value) {
-  m_uuid = value;
-  m_uuidIsSet = true;
-}
-
-bool HelloworldJsonObject::uuidIsSet() const {
-  return m_uuidIsSet;
-}
-
-void HelloworldJsonObject::unsetUuid() {
-  m_uuidIsSet = false;
-}
-
-
-
-CubeType HelloworldJsonObject::getType() const {
-  return m_type;
-}
-
-void HelloworldJsonObject::setType(CubeType value) {
-  m_type = value;
-  m_typeIsSet = true;
-}
-
-bool HelloworldJsonObject::typeIsSet() const {
-  return m_typeIsSet;
-}
-
-void HelloworldJsonObject::unsetType() {
-  m_typeIsSet = false;
-}
-
-std::string HelloworldJsonObject::CubeType_to_string(const CubeType &value){
-  switch(value){
-    case CubeType::TC:
-      return std::string("tc");
-    case CubeType::XDP_SKB:
-      return std::string("xdp_skb");
-    case CubeType::XDP_DRV:
-      return std::string("xdp_drv");
-    default:
-      throw std::runtime_error("Bad Helloworld type");
-  }
-}
-
-CubeType HelloworldJsonObject::string_to_CubeType(const std::string &str){
-  if (JsonObjectBase::iequals("tc", str))
-    return CubeType::TC;
-  if (JsonObjectBase::iequals("xdp_skb", str))
-    return CubeType::XDP_SKB;
-  if (JsonObjectBase::iequals("xdp_drv", str))
-    return CubeType::XDP_DRV;
-  throw std::runtime_error("Helloworld type is invalid");
-}
-
-
-HelloworldLoglevelEnum HelloworldJsonObject::getLoglevel() const {
-  return m_loglevel;
-}
-
-void HelloworldJsonObject::setLoglevel(HelloworldLoglevelEnum value) {
-  m_loglevel = value;
-  m_loglevelIsSet = true;
-}
-
-bool HelloworldJsonObject::loglevelIsSet() const {
-  return m_loglevelIsSet;
-}
-
-void HelloworldJsonObject::unsetLoglevel() {
-  m_loglevelIsSet = false;
-}
-
-std::string HelloworldJsonObject::HelloworldLoglevelEnum_to_string(const HelloworldLoglevelEnum &value){
-  switch(value){
-    case HelloworldLoglevelEnum::TRACE:
-      return std::string("trace");
-    case HelloworldLoglevelEnum::DEBUG:
-      return std::string("debug");
-    case HelloworldLoglevelEnum::INFO:
-      return std::string("info");
-    case HelloworldLoglevelEnum::WARN:
-      return std::string("warn");
-    case HelloworldLoglevelEnum::ERR:
-      return std::string("err");
-    case HelloworldLoglevelEnum::CRITICAL:
-      return std::string("critical");
-    case HelloworldLoglevelEnum::OFF:
-      return std::string("off");
-    default:
-      throw std::runtime_error("Bad Helloworld loglevel");
-  }
-}
-
-HelloworldLoglevelEnum HelloworldJsonObject::string_to_HelloworldLoglevelEnum(const std::string &str){
-  if (JsonObjectBase::iequals("trace", str))
-    return HelloworldLoglevelEnum::TRACE;
-  if (JsonObjectBase::iequals("debug", str))
-    return HelloworldLoglevelEnum::DEBUG;
-  if (JsonObjectBase::iequals("info", str))
-    return HelloworldLoglevelEnum::INFO;
-  if (JsonObjectBase::iequals("warn", str))
-    return HelloworldLoglevelEnum::WARN;
-  if (JsonObjectBase::iequals("err", str))
-    return HelloworldLoglevelEnum::ERR;
-  if (JsonObjectBase::iequals("critical", str))
-    return HelloworldLoglevelEnum::CRITICAL;
-  if (JsonObjectBase::iequals("off", str))
-    return HelloworldLoglevelEnum::OFF;
-  throw std::runtime_error("Helloworld loglevel is invalid");
-}
-
-  polycube::LogLevel HelloworldJsonObject::getPolycubeLoglevel() const {
-    switch(m_loglevel) {
-      case HelloworldLoglevelEnum::TRACE:
-        return polycube::LogLevel::TRACE;
-      case HelloworldLoglevelEnum::DEBUG:
-        return polycube::LogLevel::DEBUG;
-      case HelloworldLoglevelEnum::INFO:
-        return polycube::LogLevel::INFO;
-      case HelloworldLoglevelEnum::WARN:
-        return polycube::LogLevel::WARN;
-      case HelloworldLoglevelEnum::ERR:
-        return polycube::LogLevel::ERR;
-      case HelloworldLoglevelEnum::CRITICAL:
-        return polycube::LogLevel::CRITICAL;
-      case HelloworldLoglevelEnum::OFF:
-        return polycube::LogLevel::OFF;
-    }
-  }
 const std::vector<PortsJsonObject>& HelloworldJsonObject::getPorts() const{
   return m_ports;
 }
@@ -381,7 +218,6 @@ HelloworldActionEnum HelloworldJsonObject::string_to_HelloworldActionEnum(const 
     return HelloworldActionEnum::FORWARD;
   throw std::runtime_error("Helloworld action is invalid");
 }
-
 
 
 }

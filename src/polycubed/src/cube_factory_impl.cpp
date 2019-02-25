@@ -21,6 +21,8 @@
 #include "transparent_cube_tc.h"
 #include "transparent_cube_xdp.h"
 
+#include "polycube/common.h"
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -33,6 +35,17 @@ CubeFactoryImpl::CubeFactoryImpl(const std::string &service_name)
       controller_tc_(Controller::get_tc_instance()),
       controller_xdp_(Controller::get_xdp_instance()),
       datapathlog_(DatapathLog::get_instance()) {}
+
+std::shared_ptr<CubeIface> CubeFactoryImpl::create_cube(
+    const nlohmann::json &conf, const std::vector<std::string> &ingress_code,
+    const std::vector<std::string> &egress_code, const log_msg_cb &log_msg,
+    const packet_in_cb &cb) {
+  auto name = conf.at("name").get<std::string>();
+  auto type = string_to_cube_type(conf.at("type").get<std::string>());
+  auto level = stringLogLevel(conf.at("loglevel").get<std::string>());
+
+  return create_cube(name, ingress_code, egress_code, log_msg, type, cb, level);
+}
 
 std::shared_ptr<CubeIface> CubeFactoryImpl::create_cube(
     const std::string &name, const std::vector<std::string> &ingress_code,

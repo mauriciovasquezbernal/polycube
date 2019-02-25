@@ -37,6 +37,8 @@ namespace service {
 template <class PortType>
 class Cube : public BaseCube {
  public:
+  Cube(const nlohmann::json &conf, const std::vector<std::string> &ingress_code,
+       const std::vector<std::string> &egress_code);
   Cube(const std::string &name, const std::vector<std::string> &ingress_code,
        const std::vector<std::string> &egress_code, const CubeType type,
        LogLevel level = LogLevel::OFF);
@@ -48,10 +50,13 @@ class Cube : public BaseCube {
   void remove_port(const std::string &port_name);
   std::shared_ptr<PortType> get_port(const std::string &port_name);
   std::shared_ptr<PortType> get_port(int index);
-  std::vector<std::shared_ptr<PortType>> get_ports();
+  std::vector<std::shared_ptr<PortType>> get_ports() const;
 
   virtual void packet_in(PortType &port, PacketInMetadata &md,
                          const std::vector<uint8_t> &packet) = 0;
+
+  void set_conf(const nlohmann::json &conf);
+  nlohmann::json to_json() const;
 
  private:
   std::shared_ptr<CubeIface> cube_;  // pointer to the cube in polycubed
@@ -59,6 +64,36 @@ class Cube : public BaseCube {
   std::map<std::string, std::shared_ptr<PortType>> ports_by_name_;
   std::map<int, std::shared_ptr<PortType>> ports_by_id_;
 };
+
+template <class PortType>
+Cube<PortType>::Cube(const nlohmann::json &conf,
+                     const std::vector<std::string> &ingress_code,
+                     const std::vector<std::string> &egress_code)
+    : BaseCube(conf, ingress_code, egress_code) {
+  // TODO: move to function
+  handle_packet_in = [&](const PacketIn *md,
+                         const std::vector<uint8_t> &packet) -> void {
+    // This lock guarantees:
+    // - port is not deleted while processing it
+    // - service implementation is not deleted wile processing it
+    std::lock_guard<std::mutex> guard(cube_mutex);
+    if (dismounted_)
+      return;
+
+    auto &p = *ports_by_id_.at(md->port_id);
+    PacketInMetadata md_;
+    md_.reason = md->reason;
+    md_.metadata[0] = md->metadata[0];
+    md_.metadata[1] = md->metadata[1];
+    md_.metadata[2] = md->metadata[2];
+    packet_in(p, md_, packet);
+  };
+
+  cube_ = factory_->create_cube(conf, ingress_code, egress_code, handle_log_msg,
+                                handle_packet_in);
+  // TODO: where to keep this reference?, keep a double reference?
+  BaseCube::cube_ = cube_;
+}
 
 template <class PortType>
 Cube<PortType>::Cube(const std::string &name,
@@ -109,7 +144,9 @@ std::shared_ptr<PortType> Cube<PortType>::add_port(const std::string &port_name,
     throw std::runtime_error("Port " + port_name + " already exists");
   }
 
-  auto cube_port = cube_->add_port(port_name);
+  // TODO: solve binding problem
+  auto temp = conf.toJson();
+  auto cube_port = cube_->add_port(port_name, temp);
 
   try {
     typename std::map<std::string, std::shared_ptr<PortType>>::iterator iter;
@@ -127,7 +164,7 @@ std::shared_ptr<PortType> Cube<PortType>::add_port(const std::string &port_name,
 }
 
 template <class PortType>
-std::vector<std::shared_ptr<PortType>> Cube<PortType>::get_ports() {
+std::vector<std::shared_ptr<PortType>> Cube<PortType>::get_ports() const {
   std::vector<std::shared_ptr<PortType>> ports;
   for (auto &it : ports_by_name_)
     ports.push_back(it.second);
@@ -166,6 +203,16 @@ std::shared_ptr<PortType> Cube<PortType>::get_port(int index) {
                              " does not exist");
   }
   return ports_by_id_.at(index);
+}
+
+template <class PortType>
+void Cube<PortType>::set_conf(const nlohmann::json &conf) {
+  return cube_->set_conf(conf);
+}
+
+template <class PortType>
+nlohmann::json Cube<PortType>::to_json() const {
+  return cube_->to_json();
 }
 
 }  // namespace service

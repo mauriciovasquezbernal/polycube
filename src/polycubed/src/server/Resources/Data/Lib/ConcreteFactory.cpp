@@ -47,6 +47,7 @@ ConcreteFactory::ConcreteFactory(const std::string &file_name,
                   ::dlclose(h);
               }} {
   if (!handle_) {
+    std::cout << "we are fucked up: " << ::dlerror() << std::endl;
     throw std::logic_error("Cannot load service implementation " + file_name);
   }
 }

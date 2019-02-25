@@ -33,27 +33,6 @@ public:
   virtual HelloworldJsonObject toJsonObject() = 0;
 
   /// <summary>
-  /// Name of the helloworld service
-  /// </summary>
-  virtual std::string getName() = 0;
-
-  /// <summary>
-  /// UUID of the Cube
-  /// </summary>
-  virtual std::string getUuid() = 0;
-
-  /// <summary>
-  /// Type of the Cube (TC, XDP_SKB, XDP_DRV)
-  /// </summary>
-  virtual CubeType getType() = 0;
-
-  /// <summary>
-  /// Defines the logging level of a service instance, from none (OFF) to the most verbose (TRACE)
-  /// </summary>
-  virtual HelloworldLoglevelEnum getLoglevel() = 0;
-  virtual void setLoglevel(const HelloworldLoglevelEnum &value) = 0;
-
-  /// <summary>
   /// Entry of the ports table
   /// </summary>
   virtual std::shared_ptr<Ports> getPorts(const std::string &name) = 0;

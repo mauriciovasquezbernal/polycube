@@ -42,6 +42,11 @@ class CubeFactoryImpl : public CubeFactory {
   ~CubeFactoryImpl() = default;
 
   std::shared_ptr<CubeIface> create_cube(
+      const nlohmann::json &conf, const std::vector<std::string> &ingress_code,
+      const std::vector<std::string> &egress_code, const log_msg_cb &log_msg,
+      const packet_in_cb &cb);
+
+  std::shared_ptr<CubeIface> create_cube(
       const std::string &name, const std::vector<std::string> &ingress_code,
       const std::vector<std::string> &egress_code, const log_msg_cb &log_msg,
       const CubeType type, const packet_in_cb &cb, LogLevel level);

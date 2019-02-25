@@ -65,6 +65,7 @@ LeafResource::LeafResource(
 const Response LeafResource::ReadValue(const std::string &cube_name,
                                        const ListKeyValues &keys) const {
   const auto &key_params = KeyListArray::Generate(keys);
+  std::cout << "Read Value" << cube_name << " size " << keys.size() << std::endl;
   return read_handler_(cube_name.data(), key_params.data(), key_params.size());
 }
 

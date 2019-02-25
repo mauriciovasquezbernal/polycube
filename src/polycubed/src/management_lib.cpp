@@ -17,6 +17,7 @@
 
 #include "server/Parser/Yang.h"
 #include "server/Resources/Data/Lib/ConcreteFactory.h"
+#include "server/Resources/Data/BaseModel/ConcreteFactory.h"
 #include "server/Resources/Data/Lib/Service.h"
 
 #include "polycube/services/cube_factory.h"
@@ -51,7 +52,12 @@ ServiceMetadata ManagementLib::init(service::CubeFactory *factory,
   auto rest_factory =
       std::make_unique<Rest::Resources::Data::Lib::ConcreteFactory>(uri_,
                                                                     core_);
-  auto parser = Rest::Parser::Yang(md.dataModel, std::move(rest_factory));
+  auto base_model_factory =
+      std::make_unique<Rest::Resources::Data::BaseModel::ConcreteFactory>(
+          uri_, const_cast<PolycubedCore *>(core_));
+
+  auto parser = Rest::Parser::Yang(md.dataModel, std::move(rest_factory),
+                                   std::move(base_model_factory));
   service_ = parser.Parse(base_url_, name_, &md);
 
   auto service_lib =
