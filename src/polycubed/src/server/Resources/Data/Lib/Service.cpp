@@ -36,8 +36,7 @@ Service::Service(
         read_list_handler,
     std::function<Response(const char *, const Key *, size_t, const char *)>
         update_list_handler,
-    std::function<ServiceMetadata(service::CubeFactory *, const char *)>
-        init_handler,
+    std::function<void(service::CubeFactory *, const char *)> init_handler,
     std::function<Response(HelpType, const char *name, const Key *, size_t)>
         help,
     const std::string &name, const std::string &description,
@@ -89,8 +88,7 @@ Response Service::DeleteValue(const std::string &cube_name,
   return delete_handler_(cube_name.data(), nullptr, 0);
 }
 
-ServiceMetadata Service::init(service::CubeFactory *factory,
-                              const std::string &log_file) {
+void Service::init(service::CubeFactory *factory, const std::string &log_file) {
   return init_handler_(factory, log_file.data());
 }
 
