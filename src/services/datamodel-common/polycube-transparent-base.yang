@@ -7,5 +7,10 @@ module polycube-transparent-base {
 
   grouping transparent-base-yang-module {
     uses "polycube-base:base-yang-module";
+    leaf parent {
+      type string;
+      config false;
+      description "Port where this is connected to";
+    }
   }
 }
