@@ -28,7 +28,7 @@
 
 #include "LeafResource.h"
 
-#include "polycube/services/service_metadata.h"
+//#include "polycube/services/service_metadata.h"
 
 #include "polycubed_core.h"
 
