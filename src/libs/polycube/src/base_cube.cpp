@@ -32,12 +32,8 @@ BaseCube::BaseCube(const nlohmann::json &conf,
                     std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
                         logfile_, 1048576 * 5, 3),
                     std::make_shared<spdlog::sinks::stdout_sink_mt>()})) {
-<<<<<<< HEAD
-  logger()->set_level(logLevelToSPDLog(level));
-=======
   auto loglevel_ = stringLogLevel(conf.at("loglevel").get<std::string>());
   logger()->set_level(logLevelToSPDLog(loglevel_));
->>>>>>> 39108ca... use json as a configuration mechanishm for cubes and ports
   handle_log_msg = [&](const LogMsg *msg) -> void { datapath_log_msg(msg); };
 }
 
