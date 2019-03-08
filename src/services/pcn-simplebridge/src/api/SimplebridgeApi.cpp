@@ -1,6 +1,6 @@
 /**
 * simplebridge API
-* Simple L2 Bridge Service
+* simplebridge API generated from simplebridge.yang
 *
 * OpenAPI spec version: 1.0.0
 *
@@ -34,7 +34,7 @@ Response create_simplebridge_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     SimplebridgeJsonObject unique_value { request_body };
-
+    
     unique_value.setName(unique_name);
     create_simplebridge_by_id(unique_name, unique_value);
     return { kCreated, nullptr };
@@ -54,7 +54,7 @@ Response create_simplebridge_fdb_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     FdbJsonObject unique_value { request_body };
-
+    
     create_simplebridge_fdb_by_id(unique_name, unique_value);
     return { kCreated, nullptr };
   } catch(const std::exception &e) {
@@ -70,7 +70,7 @@ Response create_simplebridge_fdb_entry_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -81,7 +81,7 @@ Response create_simplebridge_fdb_entry_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     FdbEntryJsonObject unique_value { request_body };
-
+    
     unique_value.setAddress(unique_address);
     create_simplebridge_fdb_entry_by_id(unique_name, unique_address, unique_value);
     return { kCreated, nullptr };
@@ -139,7 +139,7 @@ Response create_simplebridge_ports_by_id_handler(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
@@ -150,7 +150,7 @@ Response create_simplebridge_ports_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     PortsJsonObject unique_value { request_body };
-
+    
     unique_value.setName(unique_portsName);
     create_simplebridge_ports_by_id(unique_name, unique_portsName, unique_value);
     return { kCreated, nullptr };
@@ -218,7 +218,7 @@ Response delete_simplebridge_fdb_entry_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -254,7 +254,7 @@ Response delete_simplebridge_ports_by_id_handler(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
@@ -341,7 +341,7 @@ Response read_simplebridge_fdb_entry_age_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -366,7 +366,7 @@ Response read_simplebridge_fdb_entry_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -410,7 +410,7 @@ Response read_simplebridge_fdb_entry_port_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -446,23 +446,6 @@ Response read_simplebridge_list_by_id_handler(
   }
 }
 
-Response read_simplebridge_loglevel_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-
-  try {
-
-    auto x = read_simplebridge_loglevel_by_id(unique_name);
-    nlohmann::json response_body;
-    response_body = SimplebridgeJsonObject::SimplebridgeLoglevelEnum_to_string(x);
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
 Response read_simplebridge_ports_by_id_handler(
   const char *name, const Key *keys,
   size_t num_keys ) {
@@ -470,7 +453,7 @@ Response read_simplebridge_ports_by_id_handler(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
@@ -514,7 +497,7 @@ Response read_simplebridge_ports_mac_by_id_handler(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
@@ -524,115 +507,6 @@ Response read_simplebridge_ports_mac_by_id_handler(
   try {
 
     auto x = read_simplebridge_ports_mac_by_id(unique_name, unique_portsName);
-    nlohmann::json response_body;
-    response_body = x;
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response read_simplebridge_ports_peer_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-  std::string unique_portsName;
-  for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
-      unique_portsName = std::string { keys[i].value.string };
-      break;
-    }
-  }
-
-
-  try {
-
-    auto x = read_simplebridge_ports_peer_by_id(unique_name, unique_portsName);
-    nlohmann::json response_body;
-    response_body = x;
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response read_simplebridge_ports_status_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-  std::string unique_portsName;
-  for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
-      unique_portsName = std::string { keys[i].value.string };
-      break;
-    }
-  }
-
-
-  try {
-
-    auto x = read_simplebridge_ports_status_by_id(unique_name, unique_portsName);
-    nlohmann::json response_body;
-    response_body = PortsJsonObject::PortsStatusEnum_to_string(x);
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response read_simplebridge_ports_uuid_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-  std::string unique_portsName;
-  for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
-      unique_portsName = std::string { keys[i].value.string };
-      break;
-    }
-  }
-
-
-  try {
-
-    auto x = read_simplebridge_ports_uuid_by_id(unique_name, unique_portsName);
-    nlohmann::json response_body;
-    response_body = x;
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response read_simplebridge_type_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-
-  try {
-
-    auto x = read_simplebridge_type_by_id(unique_name);
-    nlohmann::json response_body;
-    response_body = SimplebridgeJsonObject::CubeType_to_string(x);
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response read_simplebridge_uuid_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-
-  try {
-
-    auto x = read_simplebridge_uuid_by_id(unique_name);
     nlohmann::json response_body;
     response_body = x;
     return { kOk, ::strdup(response_body.dump().c_str()) };
@@ -652,7 +526,7 @@ Response replace_simplebridge_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     SimplebridgeJsonObject unique_value { request_body };
-
+    
     unique_value.setName(unique_name);
     replace_simplebridge_by_id(unique_name, unique_value);
     return { kOk, nullptr };
@@ -672,7 +546,7 @@ Response replace_simplebridge_fdb_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     FdbJsonObject unique_value { request_body };
-
+    
     replace_simplebridge_fdb_by_id(unique_name, unique_value);
     return { kOk, nullptr };
   } catch(const std::exception &e) {
@@ -688,7 +562,7 @@ Response replace_simplebridge_fdb_entry_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -699,7 +573,7 @@ Response replace_simplebridge_fdb_entry_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     FdbEntryJsonObject unique_value { request_body };
-
+    
     unique_value.setAddress(unique_address);
     replace_simplebridge_fdb_entry_by_id(unique_name, unique_address, unique_value);
     return { kOk, nullptr };
@@ -740,7 +614,7 @@ Response replace_simplebridge_ports_by_id_handler(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
@@ -751,7 +625,7 @@ Response replace_simplebridge_ports_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     PortsJsonObject unique_value { request_body };
-
+    
     unique_value.setName(unique_portsName);
     replace_simplebridge_ports_by_id(unique_name, unique_portsName, unique_value);
     return { kOk, nullptr };
@@ -795,7 +669,7 @@ Response update_simplebridge_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     SimplebridgeJsonObject unique_value { request_body };
-
+    
     unique_value.setName(unique_name);
     update_simplebridge_by_id(unique_name, unique_value);
     return { kOk, nullptr };
@@ -833,7 +707,7 @@ Response update_simplebridge_fdb_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     FdbJsonObject unique_value { request_body };
-
+    
     update_simplebridge_fdb_by_id(unique_name, unique_value);
     return { kOk, nullptr };
   } catch(const std::exception &e) {
@@ -849,7 +723,7 @@ Response update_simplebridge_fdb_entry_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -860,7 +734,7 @@ Response update_simplebridge_fdb_entry_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     FdbEntryJsonObject unique_value { request_body };
-
+    
     unique_value.setAddress(unique_address);
     update_simplebridge_fdb_entry_by_id(unique_name, unique_address, unique_value);
     return { kOk, nullptr };
@@ -901,7 +775,7 @@ Response update_simplebridge_fdb_entry_port_by_id_handler(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -942,23 +816,6 @@ Response update_simplebridge_list_by_id_handler(
   }
 }
 
-Response update_simplebridge_loglevel_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ,
-  const char *value) {
-  // Getting the path params
-  std::string unique_name { name };
-
-  try {
-    auto request_body = nlohmann::json::parse(std::string { value });
-    SimplebridgeLoglevelEnum unique_value_ = SimplebridgeJsonObject::string_to_SimplebridgeLoglevelEnum(request_body);
-    update_simplebridge_loglevel_by_id(unique_name, unique_value_);
-    return { kOk, nullptr };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
 Response update_simplebridge_ports_by_id_handler(
   const char *name, const Key *keys,
   size_t num_keys ,
@@ -967,7 +824,7 @@ Response update_simplebridge_ports_by_id_handler(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
@@ -978,7 +835,7 @@ Response update_simplebridge_ports_by_id_handler(
     auto request_body = nlohmann::json::parse(std::string { value });
     // Getting the body param
     PortsJsonObject unique_value { request_body };
-
+    
     unique_value.setName(unique_portsName);
     update_simplebridge_ports_by_id(unique_name, unique_portsName, unique_value);
     return { kOk, nullptr };
@@ -1005,32 +862,6 @@ Response update_simplebridge_ports_list_by_id_handler(
       unique_value.push_back(a);
     }
     update_simplebridge_ports_list_by_id(unique_name, unique_value);
-    return { kOk, nullptr };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response update_simplebridge_ports_peer_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ,
-  const char *value) {
-  // Getting the path params
-  std::string unique_name { name };
-  std::string unique_portsName;
-  for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
-      unique_portsName = std::string { keys[i].value.string };
-      break;
-    }
-  }
-
-
-  try {
-    auto request_body = nlohmann::json::parse(std::string { value });
-    // The conversion is done automatically by the json library
-    std::string unique_value = request_body;
-    update_simplebridge_ports_peer_by_id(unique_name, unique_portsName, unique_value);
     return { kOk, nullptr };
   } catch(const std::exception &e) {
     return { kGenericError, ::strdup(e.what()) };
@@ -1093,7 +924,7 @@ Response simplebridge_fdb_entry_by_id_help(
   std::string unique_name { name };
   std::string unique_address;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "address")) {
+    if (!strcmp(keys[i].name, "address")) { 
       unique_address = std::string { keys[i].value.string };
       break;
     }
@@ -1184,7 +1015,7 @@ Response simplebridge_ports_by_id_help(
   std::string unique_name { name };
   std::string unique_portsName;
   for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "ports_name")) {
+    if (!strcmp(keys[i].name, "ports_name")) { 
       unique_portsName = std::string { keys[i].value.string };
       break;
     }
