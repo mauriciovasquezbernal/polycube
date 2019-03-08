@@ -40,7 +40,8 @@ ServiceMetadata ManagementLib::init(service::CubeFactory *factory,
       });
 
   if (!handle_) {
-    throw std::logic_error("Cannot load service implementation " + uri_);
+    throw std::logic_error("Cannot load service implementation " + uri_ + \
+                          ": "+ std::string(::dlerror()));
   }
 
   ServiceMetadata md;

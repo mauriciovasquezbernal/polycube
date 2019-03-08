@@ -38,6 +38,34 @@ ConcreteFactory::ConcreteFactory(const std::string &file_name,
                                  PolycubedCore *core)
     : AbstractFactory(core), core_(core) {}
 
+bool ConcreteFactory::IsBaseModel(
+    const std::queue<std::string> &tree_names) const {
+  // TODO: what to check  here? we don't need
+  auto tree_names_ = tree_names;
+  tree_names_.pop();
+
+  if (tree_names_.size() == 1) {
+    auto leaf = tree_names_.front();
+    if (leaf == "type" || leaf == "uuid" || leaf == "loglevel" ||
+        leaf == "parent") {
+      return true;
+    }
+  } else if (tree_names_.size() == 2) {
+    if (tree_names_.front() != "ports") {
+      return false;
+    }
+
+    tree_names_.pop();
+    auto leaf = tree_names_.front();
+
+    if (leaf == "uuid" || leaf == "status" || leaf == "peer") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 std::unique_ptr<Endpoint::CaseResource> ConcreteFactory::RestCase(
     const std::queue<std::string> &tree_names, const std::string &name,
     const std::string &description, const std::string &cli_example,
@@ -155,7 +183,7 @@ std::unique_ptr<Endpoint::LeafResource> ConcreteFactory::RestLeaf(
         return local_core->base_model()->set_port_peer(cube_name, keys[0].value, json);
       };
     } else {
-      throw std::runtime_error("unkown element found in base datamodel");
+      throw std::runtime_error("unkown element found in base datamodel: " + leaf);
     }
   }
 

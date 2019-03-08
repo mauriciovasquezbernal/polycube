@@ -31,6 +31,8 @@ class ConcreteFactory : public Data::AbstractFactory {
  public:
   explicit ConcreteFactory(const std::string &file_name,
                            PolycubedCore *core);
+  bool IsBaseModel(const std::queue<std::string> &tree_names) const;
+
   std::unique_ptr<Endpoint::CaseResource> RestCase(
       const std::queue<std::string> &tree_names, const std::string &name,
       const std::string &description, const std::string &cli_example,
