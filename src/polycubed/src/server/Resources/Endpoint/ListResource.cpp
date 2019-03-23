@@ -236,8 +236,14 @@ void ListResource::options_multiple(const Request &request,
   ListKeyValues keys{};
 
   dynamic_cast<const ParentResource *const>(parent_)->Keys(request, keys);
-  auto helpresp = Help(Service::Cube(request), type, keys);
-  Server::ResponseGenerator::Generate({helpresp}, std::move(response));
+
+  if (!query_param.has("completion")) {
+    auto resp = Help(Service::Cube(request), type, keys);
+    Server::ResponseGenerator::Generate({resp}, std::move(response));
+  } else {
+    auto resp = Completion(Service::Cube(request), type, keys);
+    Server::ResponseGenerator::Generate({resp}, std::move(response));
+  }
 }
 
 Response ListResource::Help(const std::string &cube_name, HelpType type,
@@ -282,6 +288,45 @@ nlohmann::json ListResource::helpKeys() const {
   }
 
   return val;
+}
+
+
+Response ListResource::Completion(const std::string &cube_name, HelpType type,
+                                  const ListKeyValues &keys) {
+  nlohmann::json elements_json =
+      nlohmann::json::parse(GetElementsList(cube_name, keys).message);
+
+  // This is a nice library but a silly approach to convert it back.
+  std::vector<nlohmann::fifo_map<std::string, std::string>> elements = elements_json;
+
+  nlohmann::json val = nlohmann::json::array();
+
+  // TODO: multikey is not handled at all!
+
+  for (auto &item : elements) {
+    for (auto &key: item) {
+      val += key.second;
+    }
+  }
+
+  switch (type) {
+  case HelpType::SHOW:
+    break;
+  case HelpType::ADD:
+    val = nlohmann::json::array();
+    break;
+  case HelpType::DEL:
+    break;
+  case HelpType::NONE:
+    val += "add";
+    val += "del";
+    val += "show";
+    break;
+  default:
+    return {kBadRequest, nullptr};
+  }
+
+  return {kOk, ::strdup(val.dump().c_str())};
 }
 
 }  // namespace polycube::polycubed::Rest::Resources::Endpoint

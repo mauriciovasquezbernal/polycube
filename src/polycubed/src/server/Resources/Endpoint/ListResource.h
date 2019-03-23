@@ -60,6 +60,9 @@ class ListResource : public ParentResource, public Body::ListResource {
   Response Help(const std::string &cube_name, HelpType type,
                 const ListKeyValues &keys);
 
+  Response Completion(const std::string &cube_name, HelpType type,
+                      const ListKeyValues &keys);
+
   virtual Response GetElementsList(const std::string &cube_name,
                                    const ListKeyValues &keys) = 0;
 

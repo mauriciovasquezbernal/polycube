@@ -35,15 +35,18 @@ LeafResource::LeafResource(
     std::unique_ptr<Body::JsonValueField> &&value_field,
     const std::vector<Body::JsonNodeField> &node_fields, bool configuration,
     bool init_only_config, bool mandatory, Types::Scalar type,
-    std::unique_ptr<const std::string> &&default_value)
+    std::unique_ptr<const std::string> &&default_value,
+    bool is_enum, const std::vector<std::string> &values)
     : Body::LeafResource(name, description, cli_example, parent, core,
                          std::move(value_field), node_fields, configuration,
                          init_only_config, mandatory, type,
                          std::move(default_value)),
-      Endpoint::Resource(rest_endpoint) {
+      Endpoint::Resource(rest_endpoint),
+      is_enum_(is_enum), values_(values) {
   using Pistache::Rest::Routes::bind;
   auto router = core_->get_rest_server()->get_router();
   router->get(rest_endpoint_, bind(&LeafResource::get, this));
+  std::cout << "rest_endpoing is " << rest_endpoint_ << std::endl;
   router->options(rest_endpoint_, bind(&LeafResource::options, this));
   if (configuration_ && !init_only_config_) {
     router->patch(rest_endpoint_, bind(&LeafResource::patch, this));
@@ -142,13 +145,36 @@ void LeafResource::options(const Request &request, ResponseWriter response) {
     return;
   }
 
-  auto help = query_param.get("help").get();
-  if (help == "SHOW" || help == "SET" || help == "NO_HELP") {
-    Server::ResponseGenerator::Generate({{kOk, nullptr}}, std::move(response));
-  } else {
-    Server::ResponseGenerator::Generate({{kBadRequest, nullptr}},
-                                        std::move(response));
+  //auto help = query_param.get("help").get();
+  //if (help != "SHOW" && help != "SET" && help != "NO_HELP") {
+  //  Server::ResponseGenerator::Generate({{kOk, nullptr}}, std::move(response));
+  //} else {
+  //  Server::ResponseGenerator::Generate({{kBadRequest, nullptr}},
+  //                                      std::move(response));
+  //  return;
+  //}
+
+  ListKeyValues keys{};
+  Keys(request, keys);
+
+  if (query_param.has("completion")) {
+    Server::ResponseGenerator::Generate(
+        {Completion(Service::Cube(request), keys)}, std::move(response));
     return;
   }
+
+  Server::ResponseGenerator::Generate({{kBadRequest, nullptr}},
+                                      std::move(response));
 }
+
+Response LeafResource::Completion(const std::string &cube_name,
+                                  const ListKeyValues &keys) {
+  //std::vector<std::string> v;
+  //for (auto x : values_) {
+  //  v.push_back(Name() +"=" + x);
+  //}
+  nlohmann::json val = values_;
+  return {kOk, ::strdup(val.dump().c_str())};
+}
+
 }  // namespace polycube::polycubed::Rest::Resources::Endpoint
