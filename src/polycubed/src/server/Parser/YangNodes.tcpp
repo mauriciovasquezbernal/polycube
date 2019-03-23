@@ -330,11 +330,22 @@ void Yang::ParseLeaf(
     auto endpoint = e_parent->Endpoint() + '/' + leaf->name;
     auto base_model = base_model_factory_->IsBaseModel(parsed_names);
     auto &&factory__ = base_model ? dynamic_cast<Resources::Data::AbstractFactory*>(base_model_factory_.get()) : factory_.get();
+    bool is_enum = leaf->type.base == LY_TYPE_ENUM;
+    std::vector<std::string> values;
+
+    if (is_enum) {
+      auto enums = leaf->type.info.enums;
+      for (unsigned i = 0; i < enums.count; ++i) {
+        values.push_back(std::string((enums.enm[i].name)));
+      }
+    }
+
     leaf_res = factory__->RestLeaf(
         std::move(parsed_names), leaf->name, description, cli_example, endpoint,
         parent.get(), std::move(value_field), node_fields,
         configuration, init_only_config, mandatory,
-        Types::ScalarFromYang(leaf->type.base), std::move(default_value));
+        Types::ScalarFromYang(leaf->type.base), std::move(default_value),
+        is_enum, values);
   } else {
     leaf_res = factory_->BodyLeaf(
         leaf->name, description, cli_example, parent.get(),
@@ -503,7 +514,7 @@ void Yang::ParseAny(
         parent.get(), factory_->JsonValueField(),
         std::vector<Resources::Body::JsonNodeField>{}, configuration,
         init_only_config, mandatory, Types::Scalar::String,
-        nullptr);
+        nullptr, false, {});
   } else {
     resource =
         factory_->BodyLeaf(data->name, description, cli_example, parent.get(),
