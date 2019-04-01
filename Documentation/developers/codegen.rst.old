@@ -1,0 +1,28 @@
+1. Writing a datamodel for the service
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The service structure is described using a YANG data model.
+All the services intended to work with polycube must derive from a based service definition that defines some common structures across all services (e.g., _ports_).
+
+In order to derive from such base datamodel include the following line:
+
+::
+
+  import polycube-base { prefix "basemodel"; }
+
+
+In addition, if the base definition of a port is not enough for the service, it is possible to use the `augment` keyword to insert additional nodes, as shown below:
+
+::
+
+  uses "basemodel:base-yang-module" {
+    augment ports {
+    // Put here additional port's fields.
+    }
+  }
+
+
+The easiest way for starting to write a datamodel is to take a look to the existing ones: [helloworld](services/pcn-helloworld/resources/helloworld.yang), [forwarder](services/pcn-forwarder/resources/forwarder.yang) and [bridge](services/pcn-bridge/resources/bridge.yang).
+
+Documentation about YANG can be found on `RFC6020 <https://tools.ietf.org/html/rfc6020>`_ and `RFC7950 <https://tools.ietf.org/html/rfc7950>`_.
+
