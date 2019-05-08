@@ -438,7 +438,7 @@ std::string PolycubedCore::get_cube_port_parameter(
   auto &ctrl = get_service_controller(service_name);
   auto res = ctrl.get_management_interface()->get_service()->Child("ports");
 
-  ListKeyValues k{{"ports_name", ListType::kString, port_name}};
+  ListKeyValues k{{"ports", "name", "ports_name", ListType::kString, port_name}};
 
   std::istringstream iss(port_name + "/" + parameter);
   for (std::string segment; std::getline(iss, segment, '/');) {
@@ -447,7 +447,7 @@ std::string PolycubedCore::get_cube_port_parameter(
       auto list = std::dynamic_pointer_cast<ListResource>(res);
       if (list != nullptr) {
         for (const auto &key : list->keys_) {
-          ListKeyValue v{key.Name(), key.Type(), segment};
+          ListKeyValue v{"ports", key.OriginalName(), key.Name(), key.Type(), segment};
           k.emplace_back(v);
           std::getline(iss, segment, '/');  // if null raise error
         }

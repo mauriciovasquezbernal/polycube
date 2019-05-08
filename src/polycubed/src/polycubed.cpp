@@ -37,6 +37,7 @@
 #include <spdlog/sinks/stdout_sinks.h>
 
 #include "polycubed_core.h"
+#include "cubes_dump.h"
 
 #define REQUIRED_POLYCUBED_KERNEL ("4.14.0")
 
@@ -277,6 +278,15 @@ int main(int argc, char *argv[]) {
 
   // register services that are shipped with polycube
   load_services(*core);
+
+  // load the last topology created
+  if (!config.getCubesInitTopology()) {
+    restserver->load_last_topology();
+  }
+  //Start saving thread
+  if (!config.getCubesNoDump()) {
+    std::thread(cubes_dump::SaveToFile, config.getCubesDumpFilePath()).detach();
+  }
 
   // pause the execution of current thread until ctrl+c
   pause();

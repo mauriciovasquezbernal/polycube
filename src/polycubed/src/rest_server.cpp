@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "polycubed_core.h"
 #include "service_controller.h"
@@ -26,12 +27,20 @@
 #include "polycube/services/response.h"
 #include "server/Resources/Data/AbstractFactory.h"
 #include "server/Server/ResponseGenerator.h"
+#include "config.h"
+#include "cubes_dump.h"
 
 namespace polycube {
 namespace polycubed {
 
 std::string RestServer::whitelist_cert_path;
 std::string RestServer::blacklist_cert_path;
+
+const std::string RestServer::base = "/polycube/v1/";
+
+// This boolean is true when the rest server starts. This will be used not to save the current topology at startup.
+// This flag is then reset to false, and all the incoming configuration commands will be saved in the dump file.
+bool RestServer::startup;
 
 // start http server for Management APIs
 // Incapsultate a core object // TODO probably there are best ways...
@@ -150,6 +159,34 @@ void RestServer::shutdown() {
   } catch (const std::runtime_error &e) {
     logger->error("{0}", e.what());
   }
+  cubes_dump::kill = true;
+  cubes_dump::waitForUpdate.notify_one();
+}
+
+void RestServer::load_last_topology() {
+  startup = true;
+  std::ifstream topologyFile(configuration::config.getCubesDumpFilePath());
+  if (topologyFile.is_open()) {
+    std::stringstream buffer;
+    buffer << topologyFile.rdbuf();
+    topologyFile.close();
+    // parse the file and create and initialize each cube one by one
+    try {
+      json j = json::parse(buffer.str());
+      logJson(j);
+      for (auto &it : j) {
+        core.get_service_controller(it["service-name"]).get_management_interface()->get_service()
+                ->CreateReplaceUpdate(it["name"], it, false, true);
+      }
+    } catch (const std::exception &e) {
+      logger->error("{0}", e.what());
+    }
+  }
+  startup = false;
+}
+
+bool RestServer::isStartup() {
+  return startup;
 }
 
 void RestServer::setup_routes() {

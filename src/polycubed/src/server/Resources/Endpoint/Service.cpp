@@ -18,6 +18,8 @@
 #include "polycube/services/cube_factory.h"
 #include "polycubed_core.h"
 #include "rest_server.h"
+#include "../../config.h"
+#include "cubes_dump.h"
 
 #include "../../Server/ResponseGenerator.h"
 #include "../Body/JsonNodeField.h"
@@ -85,10 +87,12 @@ Service::CreateReplaceUpdate(const std::string &name, nlohmann::json &body, bool
     }
 
     auto resp = WriteValue(name, body, k, op);
-    if (!update && (resp.error_tag == ErrorTag::kOk ||
-                    resp.error_tag == ErrorTag::kCreated ||
-                    resp.error_tag == ErrorTag::kNoContent)) {
-      cube_names_.AddValue(name);
+    // check if the operation completed successfully and in case update the configuration
+    if (isOperationSuccessful(resp.error_tag)) {
+      if (!update) {
+        cube_names_.AddValue(name);
+      }
+      cubes_dump::UpdateCubesConfig(RestServer::base + this->name_ + "/" + name + "/", body, k, op, ResourceType::Service);
     }
     return std::vector<Response>{resp};
   } else {
@@ -189,6 +193,7 @@ void Service::del(const Pistache::Rest::Request &request,
   auto res = DeleteValue(name, k);
   Server::ResponseGenerator::Generate(std::vector<Response>{res},
                                       std::move(response));
+  cubes_dump::UpdateCubesConfig(RestServer::base + this->name_ + "/" + name + "/", nullptr, k, Operation::kDelete, ResourceType::Service);
 }
 
 void Service::patch_body(const Request &request, ResponseWriter response) {
