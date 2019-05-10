@@ -26,6 +26,10 @@
 
 #include "exceptions.h"
 
+#ifndef SOL_NETLINK
+#define SOL_NETLINK 270
+#endif
+
 namespace polycube {
 namespace polycubed {
 
@@ -212,6 +216,8 @@ class Netlink::NetlinkNotification {
         parent->notify_route_added(index, info_route);
       }
     }
+
+    parent->notify_all(0, "");
 
     return NL_OK;
   }
@@ -573,6 +579,10 @@ void Netlink::notify_route_deleted(int ifindex, const std::string &info_route) {
 
 void Netlink::notify_new_address(int ifindex, const std::string &info_address) {
   notify(Netlink::Event::NEW_ADDRESS, ifindex, info_address);
+}
+
+void Netlink::notify_all(int ifindex, const std::string &iface) {
+  notify(Netlink::Event::ALL, ifindex, iface);
 }
 
 void Netlink::attach_to_xdp(const std::string &iface, int fd,
