@@ -566,6 +566,7 @@ void Netlink::notify_link_deleted(int ifindex, const std::string &iface) {
 }
 
 void Netlink::notify_link_added(int ifindex, const std::string &iface) {
+  //logger->debug("Link add {0}", iface);
   notify(Netlink::Event::LINK_ADDED, ifindex, iface);
 }
 
@@ -582,6 +583,7 @@ void Netlink::notify_new_address(int ifindex, const std::string &info_address) {
 }
 
 void Netlink::notify_all(int ifindex, const std::string &iface) {
+  //logger->debug("notify all {0}", iface);
   notify(Netlink::Event::ALL, ifindex, iface);
 }
 

@@ -24,6 +24,8 @@ Iptables::Iptables(const std::string name, const IptablesJsonObject &conf)
   logger()->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [Iptables] [%n] [%l] %v");
   logger()->info("Creating Iptables instance");
 
+  auto &netlink_instance_iptables_ = polycube::polycubed::Netlink::getInstance();
+
   netlink_notification_index_ = netlink_instance_iptables_.registerObserver(
       polycube::polycubed::Netlink::Event::ALL,
       std::bind(&Iptables::netlinkNotificationCallbackIptables, this));
@@ -140,6 +142,8 @@ Iptables::~Iptables() {
       std::dynamic_pointer_cast<Iptables::ConntrackTableUpdate>(pr);
   ctu->quitAndJoin();
 
+  auto &netlink_instance_iptables_ = polycube::polycubed::Netlink::getInstance();
+
   netlink_instance_iptables_.unregisterObserver(
       polycube::polycubed::Netlink::Event::ALL, netlink_notification_index_);
 
@@ -154,7 +158,7 @@ Iptables::~Iptables() {
 }
 
 void Iptables::netlinkNotificationCallbackIptables() {
-  logger()->debug("Iptables - Netlink notification received");
+  logger()->info("Iptables - Netlink notification received");
   attachInterfaces();
 }
 
