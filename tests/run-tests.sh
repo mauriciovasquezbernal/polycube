@@ -11,7 +11,7 @@ SERVICES_LOAD_TIMEOUT=10
 DEBUG=false
 
 # test bridge stp
-TEST_BRIDGE_STP=false
+TEST_BRIDGE_STP=true
 
 # result.json path
 RESULT_JSON="result.json"
