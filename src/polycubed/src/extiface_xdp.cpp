@@ -33,6 +33,11 @@ ExtIfaceXDP::ExtIfaceXDP(const std::string &iface, int attach_flags)
     std::unique_lock<std::mutex> bcc_guard(bcc_mutex);
     int fd_rx = load_ingress();
     int fd_tx = load_tx();
+
+    auto devmap = tx_.get_devmap_table("xdp_devmap_");
+    int iface_index = Netlink::getInstance().get_iface_index(iface_);
+    devmap.update_value(0, iface_index);
+
     load_egress();
 
     index_ = PatchPanel::get_xdp_instance().add(fd_tx);
@@ -119,9 +124,11 @@ int handler(struct xdp_md *ctx) {
 )";
 
 const std::string ExtIfaceXDP::XDP_REDIR_PROG_CODE = R"(
+BPF_TABLE("devmap", u32, int, xdp_devmap_, 1);
+
 int handler(struct xdp_md *ctx) {
   //bpf_trace_printk("Redirect to ifindex %d\n", INTERFACE_INDEX);
-  return bpf_redirect(INTERFACE_INDEX, 0);
+  return xdp_devmap_.redirect_map(0, 0);
 }
 )";
 
