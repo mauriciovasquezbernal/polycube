@@ -117,7 +117,9 @@ void LeafResource::CreateReplaceUpdate(const Pistache::Rest::Request &request,
     errors.push_back(resp);
     // check if the operation completed successfully and in case update the configuration
     if (isOperationSuccessful(resp.error_tag)) {
-      cubes_dump::UpdateCubesConfig(request.resource(), jbody, keys, op, ResourceType::LeafResource);
+      if (auto d = core_->get_cubes_dump()) {
+        d->UpdateCubesConfig(request.resource(), jbody, keys, op, ResourceType::LeafResource);
+      }
     }
   }
   Server::ResponseGenerator::Generate(std::move(errors), std::move(response));

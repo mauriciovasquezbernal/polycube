@@ -49,7 +49,6 @@ class RestServer {
   RestServer(Pistache::Address addr, PolycubedCore &core);
 
   std::shared_ptr<Pistache::Rest::Router> get_router();
-  static bool isStartup();
 
   static const std::string base;
 
@@ -64,11 +63,6 @@ class RestServer {
   void load_last_topology();
 
  private:
-
-  // Variable used by Resource::UpdateCubesConfig to check if to save to file or not.
-  // If true, it is the load from file, so no need to write into it again.
-  static bool startup;
-
   void setup_routes();
   // this function has to be static because has to be passed as a callback.
   static int client_verify_callback(int preverify_ok, void *ctx);
@@ -136,6 +130,8 @@ class RestServer {
 
   void get_version(const Pistache::Rest::Request &request,
                    Pistache::Http::ResponseWriter response);
+
+  void create_cube(json &conf);
 
   void logRequest(const Pistache::Rest::Request &request);
   void logJson(json j);

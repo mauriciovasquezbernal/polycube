@@ -508,5 +508,13 @@ BaseModel *PolycubedCore::base_model() {
   return base_model_;
 }
 
+void PolycubedCore::set_cubes_dump(CubesDump *cubes_dump) {
+  cubes_dump_= cubes_dump;
+}
+
+CubesDump *PolycubedCore::get_cubes_dump() {
+  return cubes_dump_;
+}
+
 }  // namespace polycubed
 }  // namespace polycube

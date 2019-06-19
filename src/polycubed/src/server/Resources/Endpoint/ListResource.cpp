@@ -178,7 +178,9 @@ void ListResource::CreateReplaceUpdateWhole(
     }
     // check if the operation completed successfully and in case update the configuration
     if (isOperationSuccessful(resp.error_tag)) {
-      cubes_dump::UpdateCubesConfig(request.resource(), jbody, keys, op, ResourceType::ListResource);
+      if (auto d = core_->get_cubes_dump()) {
+        d->UpdateCubesConfig(request.resource(), jbody, keys, op, ResourceType::ListResource);
+      }
     }
   }
   Server::ResponseGenerator::Generate(std::move(errors), std::move(response));
@@ -236,7 +238,9 @@ void ListResource::del_multiple(const Request &request,
     ListKeyValues keys{};
     dynamic_cast<const ParentResource *const>(parent_)->Keys(request, keys);
     errors.push_back(DeleteWhole(cube_name, keys));
-    cubes_dump::UpdateCubesConfig(request.resource(), nullptr, keys, Operation::kDelete, ResourceType::ListResource);
+    if (auto d = core_->get_cubes_dump()) {
+      d->UpdateCubesConfig(request.resource(), nullptr, keys, Operation::kDelete, ResourceType::ListResource);
+    }
   }
   Server::ResponseGenerator::Generate(std::move(errors), std::move(response));
 }

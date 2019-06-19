@@ -23,51 +23,54 @@
 
 namespace polycube::polycubed {
 
-class cubes_dump {
-private:
+class CubesDump {
+ public:
+  CubesDump();
+  ~CubesDump();
 
-    // mutex on the access to cubesConfig
-    static std::mutex cubesConfigMutex;
-    // cubes configuration <name, configuration>
-    static std::map<std::string, nlohmann::json> cubesConfig;
-    //how many updates have been made while thread saving to file
-    static std::atomic<int> toSave;
+  void Enable();
 
-    cubes_dump();
+  void UpdateCubesConfig(const std::string &resource,
+                         const nlohmann::json &body,
+                         const ListKeyValues &keys,
+                         Rest::Resources::Endpoint::Operation opType,
+                         Rest::Resources::Endpoint::ResourceType resType);
 
-    static void UpdateCubesConfigCreateReplace(const std::vector<std::string> &resItem,
-                                               const nlohmann::json &body,
-                                               const ListKeyValues &keys,
-                                               polycube::polycubed::Rest::Resources::Endpoint::ResourceType resType);
+ private:
+  void UpdateCubesConfigCreateReplace(const std::vector<std::string> &resItem,
+                                      const nlohmann::json &body,
+                                      const ListKeyValues &keys,
+                                      Rest::Resources::Endpoint::ResourceType resType);
 
-    static void UpdateCubesConfigUpdate(const std::vector<std::string> &resItem,
-                                        const nlohmann::json body,
-                                        const ListKeyValues &keys,
-                                        polycube::polycubed::Rest::Resources::Endpoint::ResourceType resType);
+  void UpdateCubesConfigUpdate(const std::vector<std::string> &resItem,
+                               const nlohmann::json body,
+                               const ListKeyValues &keys,
+                               Rest::Resources::Endpoint::ResourceType resType);
 
-    static void UpdateCubesConfigDelete(const std::vector<std::string> &resItem,
-                                        const nlohmann::json &body,
-                                        const ListKeyValues &keys,
-                                        polycube::polycubed::Rest::Resources::Endpoint::ResourceType resType);
+  void UpdateCubesConfigDelete(const std::vector<std::string> &resItem,
+                               const nlohmann::json &body,
+                               const ListKeyValues &keys,
+                               Rest::Resources::Endpoint::ResourceType resType);
 
-    static bool checkPresence(const std::vector<std::string> &resItem,
-                              const int &resItemIndex,
-                              const std::map<std::string, std::vector<polycube::polycubed::Rest::Resources::Body::ListKeyValue>> &keyValues,
-                              const nlohmann::json &elem);
+  bool checkPresence(const std::vector<std::string> &resItem,
+                     const int &resItemIndex,
+                     const std::map<std::string, std::vector<Rest::Resources::Body::ListKeyValue>> &keyValues,
+                     const nlohmann::json &elem);
 
-public:
+  void SaveToFile(const std::string &path);
 
-    // wait until an update occurs
-    static std::condition_variable waitForUpdate;
-    // the saving thread ends if the daemon is shutting down (kill=true)
-    static bool kill;
-
-    static void UpdateCubesConfig(const std::string &resource,
-                                  const nlohmann::json &body,
-                                  const ListKeyValues &keys,
-                                  polycube::polycubed::Rest::Resources::Endpoint::Operation opType,
-                                  polycube::polycubed::Rest::Resources::Endpoint::ResourceType resType);
-
-    static void SaveToFile(const std::string &path);
+  // thread that saves in file
+  std::unique_ptr<std::thread> save_in_file_thread_;
+  // mutex on the access to cubesConfig
+  std::mutex cubesConfigMutex_;
+  // cubes configuration <name, configuration>
+  std::map<std::string, nlohmann::json> cubesConfig_;
+  //how many updates have been made while thread saving to file
+  std::atomic<int> toSave_;
+  // wait until an update occurs
+  std::condition_variable waitForUpdate_;
+  // the saving thread ends if the daemon is shutting down (kill=true)
+  bool kill_;
+  bool enabled_;
 };
 } // namespace polycube::polycubed

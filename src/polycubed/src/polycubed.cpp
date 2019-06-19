@@ -55,6 +55,7 @@ std::shared_ptr<spdlog::logger> logger;
 // create core instance
 PolycubedCore *core;
 RestServer *restserver;
+CubesDump *cubesdump;
 int netlink_notification_id = -1;
 
 void shutdown() {
@@ -69,6 +70,10 @@ void shutdown() {
     logger->debug("rest server shutdown");
     delete core;
     delete restserver;
+  }
+
+  if (cubesdump) {
+    delete cubesdump;
   }
 
   if (netlink_notification_id != -1) {
@@ -279,14 +284,19 @@ int main(int argc, char *argv[]) {
   // register services that are shipped with polycube
   load_services(*core);
 
+  // create a cubes dump instance if needed
+  if (!config.getCubesNoDump()) {
+    cubesdump = new CubesDump();
+    core->set_cubes_dump(cubesdump);
+  }
+
   // load the last topology created
   if (!config.getCubesInitTopology()) {
     restserver->load_last_topology();
   }
-  //Start saving thread
-  if (!config.getCubesNoDump()) {
-    std::thread(cubes_dump::SaveToFile, config.getCubesDumpFilePath()).detach();
-  }
+
+  // start to saving topology only after it has been loaded
+  cubesdump->Enable();
 
   // pause the execution of current thread until ctrl+c
   pause();

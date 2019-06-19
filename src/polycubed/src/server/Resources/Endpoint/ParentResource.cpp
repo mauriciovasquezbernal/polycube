@@ -130,7 +130,9 @@ void ParentResource::CreateReplaceUpdate(
     }
     // check if the operation completed successfully and in case update the configuration
     if (isOperationSuccessful(resp.error_tag)) {
-      cubes_dump::UpdateCubesConfig(request.resource(), jbody, keys, op, ResourceType::ParentResource);
+      if (auto d = core_->get_cubes_dump()) {
+        d->UpdateCubesConfig(request.resource(), jbody, keys, op, ResourceType::ParentResource);
+      }
     }
   }
   Server::ResponseGenerator::Generate(std::move(errors), std::move(response));
@@ -216,7 +218,9 @@ void ParentResource::del(const Request &request, ResponseWriter response) {
         std::vector<Response>{{ErrorTag::kNoContent, nullptr}},
         std::move(response));
     errors.push_back({ErrorTag::kCreated, nullptr});
-    cubes_dump::UpdateCubesConfig(request.resource(), nullptr, keys, Operation::kDelete, ResourceType::ParentResource);
+    if (auto d = core_->get_cubes_dump()) {
+      d->UpdateCubesConfig(request.resource(), nullptr, keys, Operation::kDelete, ResourceType::ParentResource);
+    }
   } else {
     Server::ResponseGenerator::Generate(std::vector<Response>{resp},
                                         std::move(response));

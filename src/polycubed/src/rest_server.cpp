@@ -38,10 +38,6 @@ std::string RestServer::blacklist_cert_path;
 
 const std::string RestServer::base = "/polycube/v1/";
 
-// This boolean is true when the rest server starts. This will be used not to save the current topology at startup.
-// This flag is then reset to false, and all the incoming configuration commands will be saved in the dump file.
-bool RestServer::startup;
-
 // start http server for Management APIs
 // Incapsultate a core object // TODO probably there are best ways...
 RestServer::RestServer(Pistache::Address addr, PolycubedCore &core)
@@ -159,34 +155,43 @@ void RestServer::shutdown() {
   } catch (const std::runtime_error &e) {
     logger->error("{0}", e.what());
   }
-  cubes_dump::kill = true;
-  cubes_dump::waitForUpdate.notify_one();
+}
+
+void RestServer::create_cube(json &conf) {
+  auto &s = core.get_service_controller(conf["service-name"]);
+  auto res = s.get_management_interface()->get_service()
+          ->CreateReplaceUpdate(conf["name"], conf, false, true);
+  if (res.size() != 1 || res[0].error_tag != kCreated) {
+    std::string msg;
+    for (auto & r: res) {
+      //logger->debug("- {}", r.message);
+      msg += std::string(r.message) + " ";
+    }
+
+    throw std::runtime_error("Error creating cube: " + conf["name"] + msg);
+  }
 }
 
 void RestServer::load_last_topology() {
-  startup = true;
   std::ifstream topologyFile(configuration::config.getCubesDumpFilePath());
-  if (topologyFile.is_open()) {
-    std::stringstream buffer;
-    buffer << topologyFile.rdbuf();
-    topologyFile.close();
-    // parse the file and create and initialize each cube one by one
-    try {
-      json j = json::parse(buffer.str());
-      logJson(j);
-      for (auto &it : j) {
-        core.get_service_controller(it["service-name"]).get_management_interface()->get_service()
-                ->CreateReplaceUpdate(it["name"], it, false, true);
-      }
-    } catch (const std::exception &e) {
-      logger->error("{0}", e.what());
-    }
+  if (!topologyFile.is_open()) {
+    logger->warn("Error openning dump file: {}", configuration::config.getCubesDumpFilePath());
+    return;
   }
-  startup = false;
-}
 
-bool RestServer::isStartup() {
-  return startup;
+  std::stringstream buffer;
+  buffer << topologyFile.rdbuf();
+  topologyFile.close();
+  // parse the file and create and initialize each cube one by one
+  try {
+    json jcubes = json::parse(buffer.str());
+    logJson(jcubes);
+    for (auto &jcube : jcubes) {
+     create_cube(jcube);
+    }
+  } catch (const std::exception &e) {
+    logger->error("{0}", e.what());
+  }
 }
 
 void RestServer::setup_routes() {
