@@ -729,3 +729,16 @@ func (d *FirewallManager) cleanFw(name string) (error, error) {
 
 	return iErr, eErr
 }
+
+// Destroy destroys the current firewall manager. This function should not be called manually,
+// as it is called automatically after a certain time has passed while monitoring no pods.
+// To destroy a particular firewall, see the Unlink function.
+func (d *FirewallManager) Destroy() {
+	l := log.NewEntry(d.log)
+	l.WithFields(log.Fields{"by": "FirewallManager-" + d.name, "method": "Destroy()"})
+
+	d.lock.Lock()
+	defer d.lock.Unlock()
+
+	l.Infoln("Good bye!")
+}
