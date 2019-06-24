@@ -994,5 +994,28 @@ func (d *FirewallManager) Destroy() {
 	d.lock.Lock()
 	defer d.lock.Unlock()
 
+	//-------------------------------------
+	//	Unsubscribe from all actions
+	//-------------------------------------
+	//	Actually this is duplicated code, it does the same as deleteAllPolicyTemplates.
+	//	But it is more convenient to do it like this, since we delete everything no matter the policy
+	keysToDelete := make([]string, len(d.policyActions))
+	i := 0
+
+	//	-- Unsubscribe
+	for key, action := range d.policyActions {
+		for _, unsubscribe := range action.unsubscriptors {
+			unsubscribe()
+		}
+		keysToDelete[i] = key
+		i++
+	}
+
+	//	-- Delete the action.
+	//	We do this so that queued actions will instantly return with no harm.
+	for _, key := range keysToDelete {
+		delete(d.policyActions, key)
+	}
+
 	l.Infoln("Good bye!")
 }
