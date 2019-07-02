@@ -38,7 +38,14 @@ class PeerIface {
   virtual void set_peer_iface(PeerIface *peer) = 0;
   virtual PeerIface *get_peer_iface() = 0;
 
-  virtual std::string get_parameter(const std::string &parameter) = 0;
+  virtual void subscribe_parameter(const std::string &caller,
+                                   const std::string &param_name,
+                                   paremeter_event_callback callback) = 0;
+  virtual void unsubscribe_parameter(const std::string &caller,
+                                     const std::string &param_name) = 0;
+  virtual std::string get_parameter(const std::string &param_name) = 0;
+  virtual void set_parameter(const std::string &param_name,
+                             const std::string &value) = 0;
 
   void add_cube(TransparentCube *cube, const std::string &position,
                 const std::string &other);

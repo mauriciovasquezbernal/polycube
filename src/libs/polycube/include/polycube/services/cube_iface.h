@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include <functional>
+typedef std::function<void(const std::string, const std::string)>
+    paremeter_event_callback;
+
 #include "polycube/services/cube_factory.h"
 #include "polycube/services/guid.h"
 #include "polycube/services/port_iface.h"
@@ -95,7 +99,6 @@ class CubeIface : virtual public BaseCubeIface {
 class TransparentCubeIface : virtual public BaseCubeIface {
  public:
   virtual void set_next(uint16_t next, ProgramType type) = 0;
-  virtual std::string get_parent_parameter(const std::string &parameter) = 0;
   virtual void set_parameter(const std::string &parameter,
                              const std::string &value) = 0;
   virtual void send_packet_out(const std::vector<uint8_t> &packet, Sense sense,
@@ -103,6 +106,11 @@ class TransparentCubeIface : virtual public BaseCubeIface {
 
   virtual void set_conf(const nlohmann::json &conf) = 0;
   virtual nlohmann::json to_json() const = 0;
+
+  virtual void subscribe_parent_parameter(const std::string &param_name,
+                                        paremeter_event_callback callback) = 0;
+  virtual void unsubscribe_parent_parameter(const std::string &param_name) = 0;
+  virtual std::string get_parent_parameter(const std::string &parameter) = 0;
 };
 }
 }
