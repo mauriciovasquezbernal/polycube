@@ -342,7 +342,8 @@ void Port::set_peer_parameter(const std::string &param_name,
 void Port::subscribe_parameter(const std::string &caller,
                                const std::string &param_name,
                                paremeter_event_callback callback) {
-  throw std::runtime_error("subscribe_parameter not implemented in port");
+  core->cube_port_parameter_subscribe(parent_.get_name(), name_, caller,
+                                      param_name, callback);
 }
 
 void Port::unsubscribe_parameter(const std::string &caller,
