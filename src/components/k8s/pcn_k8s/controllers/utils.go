@@ -3,7 +3,7 @@ package controllers
 import (
 	"strings"
 
-	pcn_types "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/types"
+	pcn_types "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/types"
 	"k8s.io/client-go/tools/cache"
 )
 

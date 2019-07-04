@@ -6,7 +6,7 @@ import (
 	"time"
 
 	//	TODO-ON-MERGE: change this to the polycube path
-	pcn_types "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/types"
+	pcn_types "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/types"
 
 	log "github.com/sirupsen/logrus"
 	networking_v1 "k8s.io/api/networking/v1"

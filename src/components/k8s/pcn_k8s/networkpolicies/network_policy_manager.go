@@ -7,10 +7,10 @@ import (
 	"time"
 
 	//	TODO-ON-MERGE: change these to the polycube path
-	pcn_controllers "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/controllers"
-	pcn_firewall "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/networkpolicies/pcn_firewall"
-	pcn_types "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/types"
-	k8sfirewall "github.com/SunSince90/polycube/src/components/k8s/utils/k8sfirewall"
+	pcn_controllers "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/controllers"
+	pcn_firewall "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/networkpolicies/pcn_firewall"
+	pcn_types "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/types"
+	k8sfirewall "github.com/polycube-network/polycube/src/components/k8s/utils/k8sfirewall"
 
 	log "github.com/sirupsen/logrus"
 	core_v1 "k8s.io/api/core/v1"

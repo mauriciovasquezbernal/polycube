@@ -30,9 +30,9 @@ import (
 
 	//	importing controllers
 	//	TODO-ON-MERGE: change the path here to polycube-network
-	//"github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/controllers"
-	pcn_controllers "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/controllers"
-	networkpolicies "github.com/SunSince90/polycube/src/components/k8s/pcn_k8s/networkpolicies"
+	//"github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/controllers"
+	pcn_controllers "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/controllers"
+	networkpolicies "github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/networkpolicies"
 
 	//"github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/controllers"
 	//"github.com/polycube-network/polycube/src/components/k8s/pcn_k8s/networkpolicies"

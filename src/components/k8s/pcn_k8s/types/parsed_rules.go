@@ -1,7 +1,7 @@
 package types
 
 import (
-	k8sfirewall "github.com/SunSince90/polycube/src/components/k8s/utils/k8sfirewall"
+	k8sfirewall "github.com/polycube-network/polycube/src/components/k8s/utils/k8sfirewall"
 )
 
 const (
